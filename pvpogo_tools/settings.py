@@ -14,8 +14,7 @@ from environs import Env
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-from .core.sentry import sentry_profiles_sampler
-from .core.sentry import sentry_traces_sampler
+from .core.sentry import sentry_profiles_sampler, sentry_traces_sampler
 
 # 0. Setup
 
@@ -44,7 +43,8 @@ STAGING = env.bool("STAGING", default=False)
 # 1. Django Core Settings
 # https://docs.djangoproject.com/en/4.0/ref/settings/
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"] if DEBUG else ["localhost"])
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[
+                         "*"] if DEBUG else ["localhost"])
 
 ASGI_APPLICATION = "pvpogo_tools.asgi.application"
 
@@ -62,7 +62,8 @@ DATABASES = {
         conn_health_checks=True,
     ),
 }
-DISABLE_SERVER_SIDE_CURSORS = env.bool("DISABLE_SERVER_SIDE_CURSORS", default=False)
+DISABLE_SERVER_SIDE_CURSORS = env.bool(
+    "DISABLE_SERVER_SIDE_CURSORS", default=False)
 DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = DISABLE_SERVER_SIDE_CURSORS
 DATABASES[EMAIL_RELAY_DATABASE_ALIAS][
     "DISABLE_SERVER_SIDE_CURSORS"
@@ -94,10 +95,7 @@ INSTALLED_APPS = [
     # Second Party
     "django_q_registry",
     "django_simple_nav",
-    "django_twc_ui",
-    "django_twc_ui.forms",
     "email_relay",
-    "neapolitan",
     # Third Party
     "allauth",
     "allauth.account",
@@ -275,7 +273,7 @@ TEMPLATES = [
     },
 ]
 
-TIME_ZONE = "America/Chicago"
+TIME_ZONE = "America/Los_Angeles"
 
 USE_I18N = False
 

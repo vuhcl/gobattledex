@@ -1,15 +1,15 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
 _commit: v2024.6
 _src_path: https://github.com/westerveltco/django-twc-project.git
-admin_email: ''
+admin_email: ""
 author_name: Vu H. Chu-Le
 current_version: 2024.3.1
-default_from_email: ''
-django_version: '5.0'
+default_from_email: ""
+django_version: "5.0"
 domain_name: pvpogo.tools.com
-extra_requirements_files: requirements.nohash
-fly_app_name: ''
-fly_primary_region: ''
+extra_requirements_files:
+fly_app_name: ""
+fly_primary_region: ""
 github_owner: Vu H. Chu-Le
 github_repo: pvpogo-tools
 include_vite: false
@@ -19,10 +19,10 @@ node_version: 20.9.0
 nvm_version: 0.39.5
 op_vault: pvpogo-tools
 postgres_docker_image: postgres
-postgres_docker_version: '15'
+postgres_docker_version: "15"
 project_name: pvpogo-tools
-python_version: '3.12'
-sentry_dsn: ''
-sentry_org: ''
+python_version: "3.12"
+sentry_dsn: ""
+sentry_org: ""
 sentry_project: pvpogo-tools
 tailwindcss_version: 3.4.0

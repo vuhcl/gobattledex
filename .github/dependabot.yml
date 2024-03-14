@@ -4,7 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-      timezone: America/Chicago
+      timezone: America/Los_Angeles
     labels:
       - dependabot
     groups:
@@ -15,7 +15,7 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-      timezone: America/Chicago
+      timezone: America/Los_Angeles
     labels:
       - dependabot
     groups:
@@ -28,7 +28,7 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
-      timezone: America/Chicago
+      timezone: America/Los_Angeles
     labels:
       - dependabot
     groups:

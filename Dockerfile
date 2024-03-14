@@ -14,7 +14,7 @@ ENV PYTHONPATH /app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 RUN mkdir -p /app /app/mediafiles
-RUN echo 'deb http://deb.debian.org/debian/ bookworm main contrib' >> /etc/apt/sources.list \
+RUN echo 'deb http://deb.debian.org/debian/ bookworm main' >> /etc/apt/sources.list \
   && DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
   build-essential \
   curl \
@@ -33,9 +33,7 @@ WORKDIR /app
 FROM base as py
 COPY requirements*.txt ./
 RUN python -m pip install --upgrade pip \
-  && python -m pip install -r requirements.txt \
-  && python -m pip install -r requirements.nohash.txt
-
+  && python -m pip install -r requirements.txt
 
 FROM base as node
 ARG NODE_VERSION

@@ -17,9 +17,9 @@ bootstrap:
     fi
     just install
     just build
-    just migrate
+    # just migrate
     just start
-    just createsuperuser
+    # just createsuperuser
 
 # ----------------------------------------------------------------------
 # DEPENDENCIES
@@ -30,15 +30,12 @@ _pip-compile *ARGS:
 
 @pip-compile *ARGS:
     just _pip-compile {{ ARGS }} --generate-hashes requirements.in
-    just _pip-compile {{ ARGS }} requirements.nohash.in
 
 _install *ARGS:
     python -m pip install --upgrade {{ ARGS }}
 
 @install:
     just _install -r requirements.txt
-    just _install -r requirements.nohash.txt
-    npm install
 
 pup:
     python -m pip install --upgrade pip pip-tools

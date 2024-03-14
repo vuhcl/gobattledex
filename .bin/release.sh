@@ -1,5 +1,5 @@
 #!/bin/sh
 
 cd /app
-/tailscale.sh
+# /tailscale.sh
 python -m manage migrate --noinput

@@ -1,6 +1,5 @@
 {
   "devDependencies": {
-    "@django-twc-ui/tailwind": "git+https://:x-oauth-basic@github.com/westerveltco/django-twc-ui.git#main",
     "tailwindcss": "^3.4.0",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.31"

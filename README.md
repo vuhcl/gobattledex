@@ -2,60 +2,61 @@
 
 ## Requirements
 
-- Python 3.12
-  - It is recommended to use [`pyenv`](https://github.com/pyenv/pyenv) to manage your Python versions.
-  - [`pyenv-virtualenv`](https://github.com/pyenv/pyenv-virtualenv) is also useful for managing virtual environments, though it is not required.
-- Node.js 20.9.0
-  - It is recommended to use [`nvm`](https://github.com/nvm-sh/nvm) to manage your Node.js versions.
-- Docker and Docker Compose
-  - The easiest way to install Docker and Docker Compose is to use [Docker Desktop](https://www.docker.com/products/docker-desktop).
-- [Just](https://github.com/casey/just)
-- [Direnv](https://direnv.net/)
-  - This is optional, but highly recommended.
+-   Python 3.12
+    -   It is recommended to use [`pyenv`](https://github.com/pyenv/pyenv) to manage your Python versions.
+        -   [`pyenv-virtualenv`](https://github.com/pyenv/pyenv-virtualenv) is also useful for managing virtual environments, though it is not required.
+-   Node.js 20.9.0
+    -   It is recommended to use [`nvm`](https://github.com/nvm-sh/nvm) to manage your Node.js versions.
+-   Docker and Docker Compose
+    -   The easiest way to install Docker and Docker Compose is to use [Docker Desktop](https://www.docker.com/products/docker-desktop).
+-   [Just](https://github.com/casey/just)
+-   [Direnv](https://direnv.net/)
+    -   This is optional, but highly recommended.
 
 ## Getting Started
 
 1. Clone this repository:
 
-   ```sh
-   git clone https://github.com/Vu H. Chu-Le/pvpogo-tools
-   ```
+    ```sh
+    git clone https://github.com/vuhcl/pvpogo-tools
+    ```
 
 2. Create and activate a virtual environment.
 
-   Using the Python standard library `venv` module:
+    Using the Python standard library `venv` module:
 
-   ```sh
-   python -m venv .venv
-   source venv/bin/activate  # on Windows, use .venv\Scripts\activate
-   ```
+    ```sh
+    python -m venv .venv
+    source venv/bin/activate  # on Windows, use .venv\Scripts\activate
+    ```
 
-   Using `pyenv` and `pyenv-virtualenv`:
+    Using `pyenv` and `pyenv-virtualenv`:
 
-   ```sh
-   pyenv virtualenv 3.12 pvpogo_tools-3.12
-   pyenv local pvpogo_tools-3.12
-   ```
+    ```sh
+    pyenv virtualenv 3.12 pvpogo_tools-3.12
+    pyenv local pvpogo_tools-3.12
+    ```
 
 3. Run the setup script:
 
-   ```sh
-   just bootstrap
-   ```
+    ```sh
+    just bootstrap
+    ```
 
-   This will:
-   - Copy the `.env.example` file to `.env` if it does not already exist.
-   - Install and upgrade `pip` and `pip-tools`.
-   - Generate a `requirements.txt` file from `requirements.in` (if it does not already exist) and install the dependencies.
-   - Install the Node.js dependencies.
-   - Build the Docker images for the development environment.
-   - Migrate the database.
-   - Start the development `docker-compose` services.
-   - Create a superuser for the Django admin interface with the username `admin` and the password `admin`.
+    This will:
+
+    - Copy the `.env.example` file to `.env` if it does not already exist.
+    - Install and upgrade `pip` and `pip-tools`.
+    - Generate a `requirements.txt` file from `requirements.in` (if it does not already exist) and install the dependencies.
+    - Install the Node.js dependencies.
+    - Build the Docker images for the development environment.
+    - Migrate the database.
+    - Start the development `docker-compose` services.
+    - Create a superuser for the Django admin interface with the username `admin` and the password `admin`.
 
 4. After the setup script has completed, you should be able to access the development server at [http://localhost:8000](http://localhost:8000).
 
-   By default, the development server will run on port 8000. If you need to change the port, you can do so by setting the `DJANGO_PORT` environment variable in the `.env` file and then restarting the development server.
+    By default, the development server will run on port 8000. If you need to change the port, you can do so by setting the `DJANGO_PORT` environment variable in the `.env` file and then restarting the development server.
 
 ## Development
 
@@ -65,10 +66,10 @@ This project uses the GitHub Flow workflow for development.
 
 In general, this means that:
 
-- The main branch is `main` and is always deployable.
-- All development work should be done in short-lived feature branches.
-- When a feature is complete, a pull request is opened, reviewed, and then merged into `main`.
-- After a pull request is merged, the feature branch is deleted.
+-   The main branch is `main` and is always deployable.
+-   All development work should be done in short-lived feature branches.
+-   When a feature is complete, a pull request is opened, reviewed, and then merged into `main`.
+-   After a pull request is merged, the feature branch is deleted.
 
 For more information, see the [GitHub Flow Guide](https://guides.github.com/introduction/flow/).
 
@@ -94,10 +95,10 @@ pytest
 
 `pytest` will use the `[tool.pytest.ini_options]` configuration from the `pyproject.toml` file. It is setup to:
 
-- Reuse the database between test runs courtesy of the `pytest-django` plugin.
-- Run the tests in parallel using the `pytest-xdist` plugin, using the number of CPU cores available on your machine.
-- Randomize the order of the tests using the `pytest-randomly` plugin.
-  - This is can be disabled by passing `--no-randomly` as a command line argument.
+-   Reuse the database between test runs courtesy of the `pytest-django` plugin.
+-   Run the tests in parallel using the `pytest-xdist` plugin, using the number of CPU cores available on your machine.
+-   Randomize the order of the tests using the `pytest-randomly` plugin.
+    -   This is can be disabled by passing `--no-randomly` as a command line argument.
 
 #### Code Coverage
 
@@ -113,9 +114,9 @@ The easiest and best way to maintain high code coverage is to always ensure test
 
 The floor for code coverage can be adjusted in a few places, depending on the context:
 
-- The `[tool.coverage.run]` section of the `pyproject.toml` file.
-- Adding a `--fail-under=$COVERAGE_FLOOR_NUMBER` argument to the `coverage` command in the `Justfile`.
-- The last step in the "Run tests" step of the `test` job in the `.github/workflows/tests.yml` file.
+-   The `[tool.coverage.run]` section of the `pyproject.toml` file.
+-   Adding a `--fail-under=$COVERAGE_FLOOR_NUMBER` argument to the `coverage` command in the `Justfile`.
+-   The last step in the "Run tests" step of the `test` job in the `.github/workflows/tests.yml` file.
 
 ### Type Checking
 
@@ -123,7 +124,7 @@ This project uses `mypy` and the `django-stubs` plugin for type checking. To run
 
 ```sh
 just types
-````
+```
 
 In general, you should aim to have `mypy` pass without any errors or warnings. However, given the dynamic nature of Django and the fact that the `django-stubs` project is entirely volunteer driven, it is not always possible to have `mypy` pass without any errors or warnings.
 
@@ -161,11 +162,11 @@ The [`.github/workflows/tests.yml`](.github/workflows/tests.yml) workflow is res
 
 This workflow is triggered on every pull request. It is responsible for:
 
-- Setting up and configuring the environment.
-- Running the tests.
-- Collecting and reporting the code coverage.
-- Running the type checks.
-- Running the deployment checks provided by Django's `check --deploy` management command.
+-   Setting up and configuring the environment.
+-   Running the tests.
+-   Collecting and reporting the code coverage.
+-   Running the type checks.
+-   Running the deployment checks provided by Django's `check --deploy` management command.
 
 ### CD
 
@@ -173,6 +174,6 @@ The [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) workflow is r
 
 This workflow is triggered on every push to the `main` branch. It is responsible for:
 
-- Bumping the version number across the project.
-- Deploying the application to the production environment on [Fly.io](https://fly.io/).
-- Notifying [Sentry](https://sentry.io/) of the new release.
+-   Bumping the version number across the project.
+-   Deploying the application to the production environment on [Fly.io](https://fly.io/).
+-   Notifying [Sentry](https://sentry.io/) of the new release.
