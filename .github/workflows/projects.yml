@@ -18,7 +18,7 @@ jobs:
           WEBDEV_PROJECT_URL: "op://GitHub Actions/WebDev Project/url"
           WEBDEV_PROJECT_PAT: "op://GitHub Actions/WebDev Project/PAT"
 
-      - uses: actions/add-to-project@v0.5.0
+      - uses: actions/add-to-project@v0.6.0
         with:
           project-url: ${{ env.WEBDEV_PROJECT_URL }}
           github-token: ${{ env.WEBDEV_PROJECT_PAT }}
