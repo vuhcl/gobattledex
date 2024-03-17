@@ -11,38 +11,20 @@ venv:
 
 bootstrap:
     just envsync
-    just pup
-    if ! {{ path_exists("requirements.txt") }}; then \
-        just pip-compile; \
-    fi
     just install
     just build
-    # just migrate
+    just migrate
     just start
-    # just createsuperuser
+    just createsuperuser
 
 # ----------------------------------------------------------------------
 # DEPENDENCIES
 # ----------------------------------------------------------------------
 
-_pip-compile *ARGS:
-    python -m piptools compile --resolver=backtracking --strip-extras {{ ARGS }}
-
-@pip-compile *ARGS:
-    just _pip-compile {{ ARGS }} --generate-hashes requirements.in
-
-_install *ARGS:
-    python -m pip install --upgrade {{ ARGS }}
-
 @install:
-    just _install -r requirements.txt
-
-pup:
-    python -m pip install --upgrade pip pip-tools
+    poetry install
 
 update:
-    @just pup
-    @just pip-compile --upgrade
     @just install
 
 # ----------------------------------------------------------------------
