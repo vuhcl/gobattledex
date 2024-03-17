@@ -16,7 +16,7 @@ services:
       - production_django_media:/app/pogo_pvp_tools/media
     env_file:
       - ./.env
-    command: /.bin/start
+    command: /start
     networks:
       - captain-overlay-network
 

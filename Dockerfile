@@ -1,16 +1,17 @@
+# syntax=docker/dockerfile:1
 ARG PYTHON_VERSION=3.12 \
   APP_HOME=/app \
-  UID=1000 \
-  GID=1000 \
   POETRY_CACHE_DIR='/var/cache/pypoetry' \
   POETRY_HOME='/usr/local'
 
 FROM python:${PYTHON_VERSION}-slim-bookworm as base
-ARG UID \
-  GID \
-  APP_HOME \
-  POETRY_CACHE_DIR \
-  POETRY_HOME
+ARG UID=${UID} \
+  GID=${GID} \
+  APP_HOME=${APP_HOME} \
+  POETRY_CACHE_DIR=${POETRY_CACHE_DIR} \
+  POETRY_HOME=${POETRY_HOME}
+
+# Set environment variables:
 ENV DEBUG False \
   PYTHONDONTWRITEBYTECODE 1 \
   PYTHONUNBUFFERED 1\
@@ -44,9 +45,8 @@ COPY ./manage.py ./pvpogo_tools ${APP_HOME}/
 COPY ./templates /app/templates/
 
 FROM base as final
-RUN groupadd -g "${GID}" -r django \
-  && useradd -d "${APP_HOME}" -g django -l -r -u "${UID}" django \
-  && chown django:django -R "${APP_HOME}"
+RUN addgroup --system django \
+  && adduser --system --ingroup django django
 COPY --from=app /app ${APP_HOME}
 COPY .bin /
 RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
@@ -55,4 +55,4 @@ RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   && poetry install --no-interaction --no-ansi --sync
 RUN chmod +x /entrypoint /start /worker.sh \
   && chown -R django:django /app
-ENTRYPOINT ["/bin/entrypoint"]
+ENTRYPOINT ["/entrypoint"]
