@@ -17,7 +17,3 @@ Justfile
 LICENSE
 Procfile.dev
 README.md
-fly.toml
-prettier.config.*
-pyproject.toml
-requirements*.in
