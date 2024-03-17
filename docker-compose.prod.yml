@@ -15,8 +15,5 @@ services:
   app:
     <<: *prod-app
 
-  tailwind:
-    <<: *no-run
-
   worker:
     <<: *prod-app

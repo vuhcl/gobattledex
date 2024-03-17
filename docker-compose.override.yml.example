@@ -1,17 +1,8 @@
 services:
   app:
-    # build:
-    #   args:
-    #     TAILWINDCSS_ARCH: arm64
     # platform: linux/arm64
 
   db:
-    # platform: linux/amd64
-
-  tailwind:
-    # build:
-    #   args:
-    #     TAILWINDCSS_ARCH: arm64
     # platform: linux/amd64
 
   worker:

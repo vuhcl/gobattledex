@@ -9,7 +9,6 @@ from pathlib import Path
 import django_stubs_ext
 import sentry_sdk
 from django.template import base
-from email_relay.conf import EMAIL_RELAY_DATABASE_ALIAS
 from environs import Env
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
@@ -55,23 +54,7 @@ DATABASES = {
         conn_max_age=600,  # 10 minutes
         conn_health_checks=True,
     ),
-    EMAIL_RELAY_DATABASE_ALIAS: env.dj_db_url(
-        "EMAIL_RELAY_DATABASE_URL",
-        default="sqlite:///email_relay.sqlite3",
-        conn_max_age=600,  # 10 minutes
-        conn_health_checks=True,
-    ),
 }
-DISABLE_SERVER_SIDE_CURSORS = env.bool(
-    "DISABLE_SERVER_SIDE_CURSORS", default=False)
-DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = DISABLE_SERVER_SIDE_CURSORS
-DATABASES[EMAIL_RELAY_DATABASE_ALIAS][
-    "DISABLE_SERVER_SIDE_CURSORS"
-] = DISABLE_SERVER_SIDE_CURSORS
-
-DATABASE_ROUTERS = [
-    "email_relay.db.EmailDatabaseRouter",
-]
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
@@ -93,19 +76,15 @@ INSTALLED_APPS = [
     "pvpogo_tools.core",
     "pvpogo_tools.users",
     # Second Party
-    "django_q_registry",
     "django_simple_nav",
-    "email_relay",
+    "django_q_registry",
     # Third Party
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "allauth.socialaccount.providers.okta",
     "django_browser_reload",
     "django_extensions",
     "django_htmx",
-    "django_q",
-    "django_tailwind_cli",
     "health_check",
     "health_check.db",
     "health_check.cache",
@@ -337,32 +316,10 @@ ACCOUNT_USERNAME_REQUIRED = False
 
 LOGIN_REDIRECT_URL = "index"
 
-SOCIALACCOUNT_PROVIDERS = {
-    "okta": {
-        "APP": {
-            "client_id": env("OKTA_CLIENT_ID", default=""),
-            "secret": env("OKTA_CLIENT_SECRET", default=""),
-        },
-        "OKTA_BASE_URL": "westervelt.okta.com",
-        "OAUTH_PKCE_ENABLED": True,
-    }
-}
-
 # django-debug-toolbar
 DEBUG_TOOLBAR_CONFIG = {
     "ROOT_TAG_EXTRA_ATTRS": "hx-preserve",
-}
-
-# django-q2
-Q_CLUSTER = {
-    "name": "ORM",
-    "workers": multiprocessing.cpu_count() * 2 + 1,
-    "timeout": 600,  # 10 minutes
-    "retry": 720,  # 12 minutes
-    "queue_limit": 50,
-    "bulk": 10,
-    "orm": "default",
-}
+}z
 
 # django-storages
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default=None)
@@ -376,17 +333,6 @@ AWS_S3_ADDRESSING_STYLE = env("AWS_S3_ADDRESSING_STYLE", default="virtual")
 AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default=None)
 
 AWS_S3_SIGNATURE_VERSION = env("AWS_S3_SIGNATURE_VERSION", default="s3v4")
-
-# django-tailwind-cli
-TAILWIND_CLI_CONFIG_FILE = "tailwind.config.mjs"
-
-TAILWIND_CLI_DIST_CSS = "css/tailwind.css"
-
-TAILWIND_CLI_PATH = env("TAILWIND_CLI_PATH", default="/usr/local/bin/")
-
-TAILWIND_CLI_SRC_CSS = "static/src/tailwind.css"
-
-TAILWIND_CLI_VERSION = env.str("TAILWIND_CLI_VERSION", default="3.4.0")
 
 # sentry
 if not DEBUG or env.bool("ENABLE_SENTRY", default=False):

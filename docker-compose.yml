@@ -35,17 +35,13 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - .:/app
 
-  tailwind:
-    <<: *default-app
-    build:
-      target: tailwind
-    command: python manage.py tailwind --skip-checks watch
-    depends_on: []
-    tty: true
-
   worker:
     <<: *default-app
     command: python manage.py qcluster
 
 volumes:
   postgres-data:
+
+networks:
+  captain-overlay-network:
+    external: true

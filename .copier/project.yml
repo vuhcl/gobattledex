@@ -8,15 +8,11 @@ default_from_email: ""
 django_version: "5.0"
 domain_name: pvpogo.tools.com
 extra_requirements_files:
-fly_app_name: ""
-fly_primary_region: ""
 github_owner: Vu H. Chu-Le
 github_repo: pvpogo-tools
 include_vite: false
 include_weasyprint: false
 module_name: pvpogo_tools
-node_version: 20.9.0
-nvm_version: 0.39.5
 op_vault: pvpogo-tools
 postgres_docker_image: postgres
 postgres_docker_version: "15"
@@ -25,4 +21,3 @@ python_version: "3.12"
 sentry_dsn: ""
 sentry_org: ""
 sentry_project: pvpogo-tools
-tailwindcss_version: 3.4.0
