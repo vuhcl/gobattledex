@@ -3,6 +3,7 @@ ARG PYTHON_VERSION=3.12 \
   GID=1000 \
   POETRY_CACHE_DIR='/var/cache/pypoetry' \
   POETRY_HOME='/usr/local' \
+  APP_HOME='/app' \
   TINI_VERSION=v0.19.0
 
 FROM python:${PYTHON_VERSION}-slim as base
@@ -12,7 +13,6 @@ ARG UID \
   POETRY_HOME \
   TINI_VERSION
 ENV DEBUG False \
-  PYTHONPATH /app \
   PYTHONDONTWRITEBYTECODE 1 \
   PYTHONUNBUFFERED 1\
   # poetry:
@@ -23,9 +23,7 @@ ENV DEBUG False \
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 
-RUN mkdir -p /app /app/mediafiles \
-  && echo 'deb http://deb.debian.org/debian/ bookworm main' >> /etc/apt/sources.list \
-  && DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   build-essential \
   curl \
   git \
@@ -39,11 +37,12 @@ RUN mkdir -p /app /app/mediafiles \
   && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 RUN groupadd -g "${GID}" -r django \
   && useradd -d "${APP_HOME}" -g django -l -r -u "${UID}" django \
-  && chown django:django -R /app
+  && chown django:django -R "${APP_HOME}"
+
+COPY ./poetry.lock ./pyproject.toml /app/
 WORKDIR /app
 
 FROM base as py
-COPY poetry.lock pyproject.toml /app/
 RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   echo "$DJANGO_ENV" \
   # Install deps:
