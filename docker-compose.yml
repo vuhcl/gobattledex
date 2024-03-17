@@ -13,12 +13,11 @@ x-app: &default-app
   user: "${UID:-1000}:${GID:-1000}"
   volumes:
     - .:/app:cached
-  working_dir: /app
 
 services:
   app:
     <<: *default-app
-    command: python manage.py runserver 0.0.0.0:8000 --skip-checks
+    command: /start
     ports:
       - "${DJANGO_PORT:-8000}:8000"
 
