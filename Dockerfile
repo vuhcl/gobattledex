@@ -1,10 +1,8 @@
-# syntax=docker/dockerfile:1
-ARG PYTHON_VERSION=3.12 \
-  APP_HOME=/app \
+ARG APP_HOME='/app' \
   POETRY_CACHE_DIR='/var/cache/pypoetry' \
   POETRY_HOME='/usr/local'
 
-FROM python:${PYTHON_VERSION}-slim-bookworm as base
+FROM python:3.12.2-slim-bookworm as base
 ARG UID=${UID} \
   GID=${GID} \
   APP_HOME=${APP_HOME} \
@@ -40,15 +38,15 @@ WORKDIR ${APP_HOME}
 
 FROM base as app
 
-COPY ./poetry.lock ./pyproject.toml ${APP_HOME}/
-COPY ./manage.py ./pvpogo_tools ${APP_HOME}/
-COPY ./templates /app/templates/
+COPY poetry.lock pyproject.toml ${APP_HOME}/
+COPY manage.py pvpogo_tools/ ${APP_HOME}/
+COPY templates/ /app/templates/
 
 FROM base as final
 RUN addgroup --system django \
   && adduser --system --ingroup django django
 COPY --from=app /app ${APP_HOME}
-COPY .bin /
+COPY ./.bin .
 RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   # Install deps:
   poetry run pip install -U pip \
