@@ -1,45 +1,24 @@
-version: "3"
-
-x-app: &default-app
-  build:
-    context: .
-    dockerfile: Dockerfile
-    target: app
-  depends_on:
-    db:
-      condition: "service_started"
-  env_file: .env
-  init: true
-  user: "${UID:-1000}:${GID:-1000}"
-  volumes:
-    - .:/app:cached
-
-services:
-  app:
-    <<: *default-app
-    command: /start
-    ports:
-      - "${DJANGO_PORT:-8000}:8000"
-
-  db:
-    image: postgres:15
-    env_file:
-      - .env
-    init: true
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - .:/app
-
-  worker:
-    <<: *default-app
-    command: python manage.py qcluster
+name: pvpogo-tools
 
 volumes:
-  postgres-data:
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+  production_traefik: {}
+  production_django_media: {}
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: pogo_pvp_tools_production_django
+    volumes:
+      - production_django_media:/app/pogo_pvp_tools/media
+    env_file:
+      - ./.env
+    command: /.bin/start
+    networks:
+      - captain-overlay-network
 
 networks:
   captain-overlay-network:

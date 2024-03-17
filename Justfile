@@ -10,12 +10,10 @@ venv:
     pyenv local pvpogo_tools-3.12
 
 bootstrap:
-    just envsync
     just install
     just build
-    just migrate
     just start
-    just createsuperuser
+# just createsuperuser
 
 # ----------------------------------------------------------------------
 # DEPENDENCIES
@@ -32,21 +30,21 @@ update:
 # ----------------------------------------------------------------------
 
 test *ARGS:
-    just command python -m pytest {{ ARGS }}
+    just command python3 -m pytest {{ ARGS }}
 
 coverage:
     rm -rf htmlcov
-    just command python -m coverage run -m pytest && python -m coverage html --skip-covered --skip-empty
+    just command python3 -m coverage run -m pytest && python -m coverage html --skip-covered --skip-empty
 
 types:
-    just command python -m mypy .
+    just command python3 -m mypy .
 
 # ----------------------------------------------------------------------
 # DJANGO
 # ----------------------------------------------------------------------
 
 @manage *COMMAND:
-    just command python -m manage {{ COMMAND }}
+    just command poetry run python3 -m manage {{ COMMAND }}
 
 alias mm := makemigrations
 
@@ -60,10 +58,10 @@ shell-plus:
     @just manage shell_plus
 
 createsuperuser USERNAME="admin" EMAIL="" PASSWORD="admin":
-    docker compose run --rm --no-deps app /bin/bash -c 'echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('"'"'{{ USERNAME }}'"'"', '"'"'{{ EMAIL }}'"'"', '"'"'{{ PASSWORD }}'"'"') if not User.objects.filter(username='"'"'{{ USERNAME }}'"'"').exists() else None" | python manage.py shell'
+    docker compose run --rm --no-deps app /bin/bash -c 'echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('"'"'{{ USERNAME }}'"'"', '"'"'{{ EMAIL }}'"'"', '"'"'{{ PASSWORD }}'"'"') if not User.objects.filter(username='"'"'{{ USERNAME }}'"'"').exists() else None" | python3 manage.py shell'
 
 resetuserpassword USERNAME="admin" PASSWORD="admin":
-    docker compose run --rm --no-deps app /bin/bash -c 'echo "from django.contrib.auth import get_user_model; User = get_user_model(); user = User.objects.get(username='"'"''"'"'); user.set_password('"'"''"'"'); user.save()" | python manage.py shell'
+    docker compose run --rm --no-deps app /bin/bash -c 'echo "from django.contrib.auth import get_user_model; User = get_user_model(); user = User.objects.get(username='"'"''"'"'); user.set_password('"'"''"'"'); user.save()" | python3 manage.py shell'
 
 # ----------------------------------------------------------------------
 # DOCS
@@ -179,7 +177,7 @@ up-prod *ARGS:
 # ----------------------------------------------------------------------
 
 envsync:
-    #!/usr/bin/env python
+    #!/usr/bin/env python3
     from pathlib import Path
 
     envfile = Path('.env')

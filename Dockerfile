@@ -39,8 +39,8 @@ WORKDIR ${APP_HOME}
 
 FROM base as app
 
-COPY ./poetry.lock ./pyproject.toml ${APP_HOME}
-COPY ./manage.py ./pvpogo_tools ${APP_HOME}
+COPY ./poetry.lock ./pyproject.toml ${APP_HOME}/
+COPY ./manage.py ./pvpogo_tools ${APP_HOME}/
 COPY ./templates /app/templates/
 
 FROM base as final
@@ -55,4 +55,4 @@ RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   && poetry install --no-interaction --no-ansi --sync
 RUN chmod +x /entrypoint /start /worker.sh \
   && chown -R django:django /app
-ENTRYPOINT ["/entrypoint"]
+ENTRYPOINT ["/bin/entrypoint"]

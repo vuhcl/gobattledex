@@ -5,11 +5,11 @@ import os
 import sys
 from pathlib import Path
 
-from environs import Env
+import environ
 
 
 def main() -> None:
-    env = Env()
+    env = environ.Env()
     env.read_env(Path(".env").as_posix())
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pvpogo_tools.settings")
