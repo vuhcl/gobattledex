@@ -30,6 +30,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # Installing `poetry` package manager:
   # https://github.com/python-poetry/poetry
   && curl -sSL 'https://install.python-poetry.org' | POETRY_HOME=${POETRY_HOME} python3 - \
+  && PATH="/root/.local/bin:$PATH" \
   # Cleaning cache:
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
@@ -47,6 +48,7 @@ RUN addgroup --system django \
   && adduser --system --ingroup django django
 COPY --from=app /app ${APP_HOME}
 COPY ./.bin .
+
 RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   # Install deps:
   poetry run pip install -U pip \
