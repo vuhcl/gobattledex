@@ -9,7 +9,7 @@ from pathlib import Path
 import django_stubs_ext
 import sentry_sdk
 from django.template import base
-from environs import Env
+import environ
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -19,7 +19,7 @@ from .core.sentry import sentry_profiles_sampler, sentry_traces_sampler
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
-env = Env()
+env = environ.Env()
 env.read_env(Path(BASE_DIR, ".env").as_posix())
 
 # Monkeypatching Django, so stubs will work for all generics,

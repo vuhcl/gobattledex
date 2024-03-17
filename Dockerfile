@@ -39,9 +39,8 @@ WORKDIR ${APP_HOME}
 
 FROM base as app
 
-COPY ./poetry.lock ./pyproject.toml /app/
-COPY ./usr/local /usr/local/
-COPY ./manage.py pvpogo_tools /app/
+COPY ./poetry.lock ./pyproject.toml ${APP_HOME}
+COPY ./manage.py ./pvpogo_tools ${APP_HOME}
 COPY ./templates /app/templates/
 
 FROM base as final
