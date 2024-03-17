@@ -4,4 +4,4 @@ from pvpogo_tools import __version__
 
 
 def test_version():
-    assert __version__ == "2024.3.4"
+    assert __version__ == "2024.3.5"
