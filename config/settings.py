@@ -6,15 +6,14 @@ import socket
 import sys
 from pathlib import Path
 
-import django_stubs_ext
+# import django_stubs_ext
 import environ
 import sentry_sdk
 from django.template import base
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-from .core.sentry import sentry_profiles_sampler
-from .core.sentry import sentry_traces_sampler
+from .core.sentry import sentry_profiles_sampler, sentry_traces_sampler
 
 # 0. Setup
 
@@ -25,10 +24,10 @@ env.read_env(Path(BASE_DIR, ".env").as_posix())
 
 # Monkeypatching Django, so stubs will work for all generics,
 # see: https://github.com/typeddjango/django-stubs
-django_stubs_ext.monkeypatch()
+# django_stubs_ext.monkeypatch()
 
 # Monkeypatching Django templates, to support multiline template tags
-base.tag_re = re.compile(base.tag_re.pattern, re.DOTALL)
+# base.tag_re = re.compile(base.tag_re.pattern, re.DOTALL)
 
 # We should strive to only have two possible runtime scenarios: either `DEBUG`
 # is True or it is False. `DEBUG` should be only true in development, and
@@ -40,11 +39,19 @@ DEBUG = env.bool("DEBUG", default=False)
 # would be used for.
 STAGING = env.bool("STAGING", default=False)
 
+CAPROVER = env.bool("CAPROVER", default=False)
+
 # 1. Django Core Settings
 # https://docs.djangoproject.com/en/4.0/ref/settings/
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[
-                         "*"] if DEBUG else ["localhost"])
+if CAPROVER:
+    ALLOWED_HOSTS = env("CAPROVER_HOSTS", default=["localhost"])
+else:
+    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[
+        "*"] if DEBUG else ["localhost"])
+
+
+SITE_ID = 1
 
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
@@ -81,11 +88,11 @@ INSTALLED_APPS = [
     "django_browser_reload",
     "django_extensions",
     "django_htmx",
-    "health_check",
-    "health_check.db",
-    "health_check.cache",
-    "health_check.storage",
-    "health_check.contrib.migrations",
+    # "health_check",
+    # "health_check.db",
+    # "health_check.cache",
+    # "health_check.storage",
+    # "health_check.contrib.migrations",
     "heroicons",
     "simple_history",
     "template_partials",
