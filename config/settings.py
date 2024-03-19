@@ -18,7 +18,7 @@ import environ
 
 # 0. Setup
 
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+BASE_DIR = Path(__file__).resolve(strict=True).parent
 APPS_DIR = BASE_DIR / "pvpogo_tools"
 env = environ.Env()
 
@@ -196,7 +196,7 @@ if DEBUG:
 ROOT_URLCONF = "config.urls"
 
 SECRET_KEY = env(
-    "SECRET_KEY",
+    "DJANGO_SECRET_KEY",
     default="eZPdvuAaLrVY8Kj3DG2QNqJaJc4fPp6iDgYneKN3fkNmqgkcNnoNLkFe3NCRXqW",
 )
 
