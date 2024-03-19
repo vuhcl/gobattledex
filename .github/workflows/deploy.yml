@@ -14,22 +14,6 @@ jobs:
   bumpver:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.12
-
-      - name: Configure git to push
-        run: |
-          git config --global user.email "actions@users.noreply.github.com"
-          git config --global user.name "Automated Publisher"
-
-      - name: Push Release Build to GitHub
-        run: |
-          git push
-
-          jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
