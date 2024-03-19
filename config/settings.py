@@ -9,8 +9,6 @@ from pathlib import Path
 # import django_stubs_ext
 import environ
 
-
-# import sentry_sdk
 # from django.template import base
 # from sentry_sdk.integrations.django import DjangoIntegration
 # from sentry_sdk.integrations.logging import LoggingIntegration

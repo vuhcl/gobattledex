@@ -1,4 +1,3 @@
-name: pvpogo-tools
 
 volumes:
   production_postgres_data: {}
@@ -11,10 +10,20 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: gopvp_production_django
+
+    image: pogo_pvp_tools_production_django
+    volumes:
+      - production_django_media:/app/pogo_pvp_tools/media
+    depends_on:
+      - postgres
     env_file:
       - ./.env
+    # command: /start
+
+  postgres:
+    image: docker.io/postgres:15
     volumes:
-      - production_django_media:/app/gopvp/media
-    init: true
-    command: ./start
+      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data_backups:/backups
+    env_file:
+      - ./.env

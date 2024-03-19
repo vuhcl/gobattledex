@@ -70,5 +70,6 @@ RUN chmod +x /start
 COPY --chown=django:django manage.py /app/
 COPY --chown=django:django pvpogo_tools config /app/
 USER django
+WORKDIR /app
 ENTRYPOINT ["/entrypoint"]
-CMD ["/start"]
+# CMD ["/start"]
