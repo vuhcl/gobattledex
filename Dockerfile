@@ -30,6 +30,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   # Installing `poetry` package manager:
   # https://github.com/python-poetry/poetry
   && curl -sSL 'https://install.python-poetry.org' | python3 - \
+  && PATH="/root/.local/bin:$PATH" \
   && poetry install --only main --no-root --no-directory \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
