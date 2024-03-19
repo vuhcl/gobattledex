@@ -39,7 +39,7 @@ plugins = ["django_coverage_plugin"]
 source = ["pvpogo_tools"]
 
 [tool.django-stubs]
-django_settings_module = "config.settings"
+django_settings_module = ".config.settings"
 
 [tool.djlint]
 ignore = "H031"  # Don't require `meta` tag keywords
@@ -83,7 +83,7 @@ module = [
 ignore_missing_model_attributes = true
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "pvpogo_tools.settings"
+DJANGO_SETTINGS_MODULE = ".config.settings"
 addopts = "--reuse-db -n auto --dist loadfile"
 norecursedirs = ".* bin build dist *.egg htmlcov logs node_modules static templates venv"
 python_files = "tests.py test_*.py *_tests.py"

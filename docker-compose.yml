@@ -18,7 +18,7 @@ services:
       - postgres
     env_file:
       - ./.env
-    # command: /start
+    command: /start
 
   postgres:
     image: docker.io/postgres:15

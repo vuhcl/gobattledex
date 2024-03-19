@@ -72,4 +72,4 @@ COPY --chown=django:django pvpogo_tools config /app/
 USER django
 WORKDIR /app
 ENTRYPOINT ["/entrypoint"]
-# CMD ["/start"]
+CMD ["/start"]
