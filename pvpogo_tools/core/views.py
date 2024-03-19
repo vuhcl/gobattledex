@@ -4,12 +4,8 @@ from pathlib import Path
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles import finders
-from django.http import FileResponse
-from django.http import HttpRequest
-from django.http import HttpResponse
-from django.http import HttpResponseNotFound
-from django.shortcuts import redirect
-from django.shortcuts import render
+from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseNotFound
+from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.cache import cache_control
 from django.views.decorators.http import require_GET
@@ -64,6 +60,5 @@ def favicon(request: HttpRequest) -> HttpResponse | FileResponse:
 
 
 @require_GET
-@login_required
 def index(request: HttpRequest) -> HttpResponse:
     return render(request, "index.html", context={})

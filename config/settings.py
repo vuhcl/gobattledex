@@ -7,13 +7,14 @@ import sys
 from pathlib import Path
 
 import django_stubs_ext
+import environ
 import sentry_sdk
 from django.template import base
-import environ
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-from .core.sentry import sentry_profiles_sampler, sentry_traces_sampler
+from .core.sentry import sentry_profiles_sampler
+from .core.sentry import sentry_traces_sampler
 
 # 0. Setup
 
@@ -45,16 +46,11 @@ STAGING = env.bool("STAGING", default=False)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[
                          "*"] if DEBUG else ["localhost"])
 
-ASGI_APPLICATION = "pvpogo_tools.asgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = "config.asgi.application"
 
-DATABASES = {
-    "default": env.dj_db_url(
-        "DATABASE_URL",
-        default="sqlite:///db.sqlite3",
-        conn_max_age=600,  # 10 minutes
-        conn_health_checks=True,
-    ),
-}
+DATABASES = {"default": env.db("DATABASE_URL")}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
@@ -115,6 +111,8 @@ if DEBUG:
         "127.0.0.1",
         "10.0.2.2",
     ]
+
+MIGRATION_MODULES = {"sites": "pogo_pvp_tools.contrib.sites.migrations"}
 
 LANGUAGE_CODE = "en-us"
 
@@ -267,20 +265,21 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
-
+PASSWORD_HASHERS = [
+    # https://docs.djangoproject.com/en/dev/topics/auth/passwords/#using-argon2-with-django
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+]
+# https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -319,7 +318,7 @@ LOGIN_REDIRECT_URL = "index"
 # django-debug-toolbar
 DEBUG_TOOLBAR_CONFIG = {
     "ROOT_TAG_EXTRA_ATTRS": "hx-preserve",
-}z
+}
 
 # django-storages
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default=None)

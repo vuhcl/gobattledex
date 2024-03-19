@@ -12,7 +12,7 @@ def main() -> None:
     env = environ.Env()
     env.read_env(Path(".env").as_posix())
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pvpogo_tools.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
     try:
         from django.core.management import execute_from_command_line
