@@ -13,7 +13,8 @@ from django.template import base
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-from .core.sentry import sentry_profiles_sampler, sentry_traces_sampler
+from .core.sentry import sentry_profiles_sampler
+from .core.sentry import sentry_traces_sampler
 
 # 0. Setup
 
@@ -45,7 +46,7 @@ CAPROVER = env.bool("CAPROVER", default=False)
 # https://docs.djangoproject.com/en/4.0/ref/settings/
 
 if CAPROVER:
-    ALLOWED_HOSTS = env("CAPROVER_HOSTS", default=["localhost"])
+    ALLOWED_HOSTS = env.list("CAPROVER_HOSTS", default=["localhost"])
 else:
     ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[
         "*"] if DEBUG else ["localhost"])
