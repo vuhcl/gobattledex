@@ -71,3 +71,4 @@ COPY --chown=django:django manage.py .
 COPY --chown=django:django pvpogo_tools config ./
 USER django
 ENTRYPOINT ["/entrypoint"]
+CMD ["/start"]
