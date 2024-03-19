@@ -11,8 +11,10 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: pogo_pvp_tools_production_django
+    image: gopvp_production_django
+    env_file:
+      - ./.env
     volumes:
-      - production_django_media:/app/pogo_pvp_tools/media
+      - production_django_media:/app/gopvp/media
     init: true
     command: ./start

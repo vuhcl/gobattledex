@@ -1,56 +1,73 @@
-# syntax=docker/dockerfile:1
-ARG PYTHON_VERSION=3.12 \
-  APP_HOME=/app \
-  UID=1000 \
-  GID=1000
-FROM python:${PYTHON_VERSION}-slim as base
-ARG UID \
-  GID \
-  APP_HOME \
-  POETRY_CACHE_DIR \
-  POETRY_HOME
-ENV DEBUG False \
-  PYTHONDONTWRITEBYTECODE 1 \
-  PYTHONUNBUFFERED 1 \
-  POETRY_VERSION=1.8.2 \
-  PIP_NO_CACHE_DIR=1 \
-  PIP_DISABLE_PIP_VERSION_CHECK=1 \
+# Dockerfile
+# Uses multi-stage builds requiring Docker 17.05 or higher
+# See https://docs.docker.com/develop/develop-images/multistage-build/
+
+# Creating a python base with shared environment variables
+FROM python:3.12.2-slim as python-base
+ENV PYTHONUNBUFFERED=1 \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PIP_NO_CACHE_DIR=off \
+  PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
-  PIP_ROOT_USER_ACTION=ignore \
-  # poetry:
+  POETRY_HOME="/opt/poetry" \
+  POETRY_VIRTUALENVS_IN_PROJECT=true \
   POETRY_NO_INTERACTION=1 \
-  POETRY_VIRTUALENVS_CREATE=false
+  POETRY_VERSION=1.8.2 \
+  PYSETUP_PATH="/opt/pysetup" \
+  VENV_PATH="/opt/pysetup/.venv"
 
-COPY ./poetry.lock ./pyproject.toml /
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-RUN apt-get update && apt-get install --no-install-recommends -y \
-  build-essential \
+# builder-base is used to build dependencies
+FROM python-base as builder-base
+RUN apt-get update \
+  && apt-get install --no-install-recommends -y \
   curl \
   libpq-dev \
-  # Installing `poetry` package manager:
-  # https://github.com/python-poetry/poetry
-  && curl -sSL 'https://install.python-poetry.org' | python3 - \
-  && /root/.local/bin/poetry install --only main --no-root --no-directory \
-  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && rm -rf /var/lib/apt/lists/*
+  build-essential
 
-RUN groupadd -g "${GID}" -r django \
-  && useradd -d "${APP_HOME}" -g django -l -r -u "${UID}" django
+# Install Poetry - respects $POETRY_VERSION & $POETRY_HOME
+RUN curl -sSL 'https://install.python-poetry.org' | POETRY_HOME=${POETRY_HOME} python3 -
 
-WORKDIR ${APP_HOME}
-COPY --chown=django:django manage.py .
-COPY --chown=django:django pvpogo_tools config ./
+# We copy our Python requirements here to cache them
+# and install only runtime deps using poetry
+WORKDIR $PYSETUP_PATH
+COPY ./pyproject.toml .
+RUN poetry lock && poetry install --only main --no-root --no-directory
 
-COPY --chown=django:django ./.bin/entrypoint /entrypoint
-RUN sed -i 's/\r$//g' /entrypoint
+# 'development' stage installs all dev deps and can be used to develop code.
+# For example using docker-compose to mount local volume under /app
+FROM python-base as development
+# Copying poetry and venv into image
+COPY --from=builder-base $POETRY_HOME $POETRY_HOME
+COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
+
+# Copying in our entrypoint
+COPY ./docker/entrypoint /entrypoint
 RUN chmod +x /entrypoint
 
-COPY --chown=django:django ./.bin/start /start
-RUN sed -i 's/\r$//g' /start
+# venv already has runtime deps installed we get a quicker install
+WORKDIR $PYSETUP_PATH
+RUN poetry install --with dev
+
+WORKDIR /app
+COPY . .
+
+EXPOSE 8000
+ENTRYPOINT ["/entrypoint"]
+
+FROM python-base as production
+RUN addgroup --system django \
+  && adduser --system --ingroup django django
+
+COPY --chown=django:django --from=builder-base $VENV_PATH $VENV_PATH
+COPY --chown=django:django ./docker/entrypoint /entrypoint
+RUN chmod +x /entrypoint
+
+COPY --chown=django:django ./docker/start /start
 RUN chmod +x /start
 
-RUN /root/.local/bin/poetry install --only main
-
+COPY --chown=django:django manage.py .
+COPY --chown=django:django pvpogo_tools config ./
 USER django
-EXPOSE 5000
 ENTRYPOINT ["/entrypoint"]
