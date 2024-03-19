@@ -67,8 +67,8 @@ RUN chmod +x /entrypoint
 COPY --chown=django:django ./docker/start /start
 RUN chmod +x /start
 
-COPY --chown=django:django manage.py .
-COPY --chown=django:django pvpogo_tools config ./
+COPY --chown=django:django manage.py /app/
+COPY --chown=django:django pvpogo_tools config /app/
 USER django
 ENTRYPOINT ["/entrypoint"]
 CMD ["/start"]
