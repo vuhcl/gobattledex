@@ -67,5 +67,4 @@ RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
 USER django
-EXPOSE 80
 ENTRYPOINT ["/entrypoint"]
