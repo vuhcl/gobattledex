@@ -2,8 +2,7 @@
 ARG PYTHON_VERSION=3.12 \
   APP_HOME=/app \
   UID=1000 \
-  GID=1000 \
-
+  GID=1000
 FROM python:${PYTHON_VERSION}-slim as base
 ARG UID \
   GID \
