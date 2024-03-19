@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 ARG PYTHON_VERSION=3.12 \
   APP_HOME=/app \
   UID=1000 \
@@ -55,4 +56,5 @@ RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   && poetry install --only main --no-interaction --no-ansi --sync
 
 USER django
+EXPOSE 5000
 ENTRYPOINT ["/entrypoint"]
