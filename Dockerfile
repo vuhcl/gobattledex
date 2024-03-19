@@ -3,8 +3,6 @@ ARG PYTHON_VERSION=3.12 \
   APP_HOME=/app \
   UID=1000 \
   GID=1000 \
-  POETRY_CACHE_DIR='/var/cache/pypoetry' \
-  POETRY_HOME='/usr/local'
 
 FROM python:${PYTHON_VERSION}-slim as base
 ARG UID \
@@ -32,7 +30,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   libpq-dev \
   # Installing `poetry` package manager:
   # https://github.com/python-poetry/poetry
-  && curl -sSL 'https://install.python-poetry.org' | POETRY_HOME=${POETRY_HOME} python3 - \
+  && curl -sSL 'https://install.python-poetry.org' | python3 - \
+  && poetry install --only main --no-root --no-directory \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
@@ -51,9 +50,7 @@ COPY --chown=django:django ./.bin/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
-RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
-  poetry run pip install -U pip \
-  && poetry install --only main --no-interaction --no-ansi --sync
+RUN poetry install --only main
 
 USER django
 EXPOSE 5000
