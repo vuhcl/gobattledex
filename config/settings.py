@@ -8,17 +8,20 @@ from pathlib import Path
 
 # import django_stubs_ext
 import environ
-import sentry_sdk
-from django.template import base
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
 
-from .core.sentry import sentry_profiles_sampler
-from .core.sentry import sentry_traces_sampler
+
+# import sentry_sdk
+# from django.template import base
+# from sentry_sdk.integrations.django import DjangoIntegration
+# from sentry_sdk.integrations.logging import LoggingIntegration
+
+# from .core.sentry import sentry_profiles_sampler
+# from .core.sentry import sentry_traces_sampler
 
 # 0. Setup
 
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
+APPS_DIR = BASE_DIR / "pvpogo_tools"
 
 env = environ.Env()
 env.read_env(Path(BASE_DIR, ".env").as_posix())
@@ -120,7 +123,7 @@ if DEBUG:
         "10.0.2.2",
     ]
 
-MIGRATION_MODULES = {"sites": "pogo_pvp_tools.contrib.sites.migrations"}
+MIGRATION_MODULES = {"sites": "pvpogo_tools.contrib.sites.migrations"}
 
 LANGUAGE_CODE = "en-us"
 
@@ -154,9 +157,9 @@ LOGGING = {
     },
 }
 
-MEDIA_ROOT = Path(BASE_DIR, "mediafiles")
-
-MEDIA_URL = "/mediafiles/"
+MEDIA_ROOT = str(APPS_DIR / "media")
+# https://docs.djangoproject.com/en/dev/ref/settings/#media-url
+MEDIA_URL = "/media/"
 
 # https://docs.djangoproject.com/en/dev/topics/http/middleware/
 # https://docs.djangoproject.com/en/dev/ref/middleware/#middleware-ordering
@@ -189,19 +192,44 @@ if DEBUG:
         "debug_toolbar.middleware.DebugToolbarMiddleware",
     )
 
-ROOT_URLCONF = "pvpogo_tools.urls"
+ROOT_URLCONF = "config.urls"
 
 SECRET_KEY = env(
     "SECRET_KEY",
     default="eZPdvuAaLrVY8Kj3DG2QNqJaJc4fPp6iDgYneKN3fkNmqgkcNnoNLkFe3NCRXqW",
 )
 
+# SECURITY
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-proxy-ssl-header
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-ssl-redirect
+SECURE_SSL_REDIRECT = env.bool("DJANGO_SECURE_SSL_REDIRECT", default=True)
+# https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-secure
+SESSION_COOKIE_SECURE = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-secure
+CSRF_COOKIE_SECURE = True
+# https://docs.djangoproject.com/en/dev/topics/security/#ssl-https
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-seconds
+# https://docs.djangoproject.com/en/dev/ref/middleware/#x-content-type-options-nosniff
+SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
+    "DJANGO_SECURE_CONTENT_TYPE_NOSNIFF",
+    default=True,
+)
+
+
 SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 
 SECURE_HSTS_PRELOAD = not DEBUG
 
 # 10 minutes to start with, will increase as HSTS is tested
-SECURE_HSTS_SECONDS = 0 if DEBUG else 600
+SECURE_HSTS_SECONDS = 60 if DEBUG else 518400
+
+SESSION_COOKIE_HTTPONLY = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly
+CSRF_COOKIE_HTTPONLY = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
+X_FRAME_OPTIONS = "DENY"
 
 # https://noumenal.es/notes/til/django/csrf-trusted-origins/
 # https://fly.io/docs/reference/runtime-environment/#x-forwarded-proto
@@ -213,18 +241,19 @@ SESSION_COOKIE_SECURE = not DEBUG
 
 SITE_ID = 1
 
+
+# STATIC & MEDIA
+# ------------------------
 STORAGES = {
     "default": {
-        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-if DEBUG and not env.bool("USE_S3", default=False):
-    STORAGES["default"] = {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    }
+
+
 
 # https://nickjanetakis.com/blog/django-4-1-html-templates-are-cached-by-default-with-debug-true
 DEFAULT_LOADERS = [
@@ -237,14 +266,14 @@ CACHED_LOADERS = [("django.template.loaders.cached.Loader", DEFAULT_LOADERS)]
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            Path(BASE_DIR, "templates"),
-        ],
+        "DIRS": [str(APPS_DIR / "templates")],
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
                 "django.contrib.messages.context_processors.messages",
             ],
             "debug": DEBUG,
@@ -263,8 +292,6 @@ TIME_ZONE = "America/Los_Angeles"
 USE_I18N = False
 
 USE_TZ = True
-
-WSGI_APPLICATION = "pvpogo_tools.wsgi.application"
 
 # 2. Django Contrib Settings
 
@@ -292,14 +319,18 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "users.User"
 
-# django.contrib.staticfiles
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
+# STATIC
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+STATIC_ROOT = str(BASE_DIR / "staticfiles")
+# https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = "/static/"
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static" / "dist",
-    BASE_DIR / "static" / "public",
+# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
+STATICFILES_DIRS = [str(APPS_DIR / "static")]
+# https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
 # 3. Third Party Settings
@@ -328,31 +359,46 @@ DEBUG_TOOLBAR_CONFIG = {
     "ROOT_TAG_EXTRA_ATTRS": "hx-preserve",
 }
 
-# django-storages
-AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", default=None)
+# django-compressor
+# ------------------------------------------------------------------------------
+INSTALLED_APPS += ["compressor"]
+STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
+# https://django-compressor.readthedocs.io/en/latest/settings/#django.conf.settings.COMPRESS_ENABLED
+COMPRESS_ENABLED = env.bool("COMPRESS_ENABLED", default=True)
+# https://django-compressor.readthedocs.io/en/latest/settings/#django.conf.settings.COMPRESS_STORAGE
+COMPRESS_STORAGE = "compressor.storage.GzipCompressorFileStorage"
+# https://django-compressor.readthedocs.io/en/latest/settings/#django.conf.settings.COMPRESS_URL
+COMPRESS_URL = STATIC_URL
+# https://django-compressor.readthedocs.io/en/latest/settings/#django.conf.settings.COMPRESS_OFFLINE
+COMPRESS_OFFLINE = True  # Offline compression is required when using Whitenoise
+# https://django-compressor.readthedocs.io/en/latest/settings/#django.conf.settings.COMPRESS_FILTERS
+COMPRESS_FILTERS = {
+    "css": [
+        "compressor.filters.css_default.CssAbsoluteFilter",
+        "compressor.filters.cssmin.rCSSMinFilter",
+    ],
+    "js": ["compressor.filters.jsmin.JSMinFilter"],
+}
+# django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
+CORS_URLS_REGEX = r"^/api/.*$"
 
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", default=None)
-
-AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default=None)
-
-AWS_S3_ADDRESSING_STYLE = env("AWS_S3_ADDRESSING_STYLE", default="virtual")
-
-AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default=None)
-
-AWS_S3_SIGNATURE_VERSION = env("AWS_S3_SIGNATURE_VERSION", default="s3v4")
-
-# sentry
-if not DEBUG or env.bool("ENABLE_SENTRY", default=False):
-    sentry_sdk.init(
-        dsn=env("SENTRY_DSN", default=None),
-        environment=env("SENTRY_ENV", default=None),
-        integrations=[
-            DjangoIntegration(),
-            LoggingIntegration(event_level=None, level=None),
-        ],
-        traces_sampler=sentry_traces_sampler,
-        profiles_sampler=sentry_profiles_sampler,
-        send_default_pii=True,
-    )
+# # sentry
+# if not DEBUG or env.bool("ENABLE_SENTRY", default=False):
+#     sentry_sdk.init(
+#         dsn=env("SENTRY_DSN", default=None),
+#         environment=env("SENTRY_ENV", default=None),
+#         integrations=[
+#             DjangoIntegration(),
+#             LoggingIntegration(event_level=None, level=None),
+#         ],
+#         traces_sampler=sentry_traces_sampler,
+#         profiles_sampler=sentry_profiles_sampler,
+#         send_default_pii=True,
+#     )
 
 # 4. Project Settings
+ADMIN_URL = "admin/"
+# https://docs.djangoproject.com/en/dev/ref/settings/#admins
+ADMINS = [("""Vu H. Chu-Le""", "vu@uni.minerva.edu")]
+# https://docs.djangoproject.com/en/dev/ref/settings/#managers
+MANAGERS = ADMINS
