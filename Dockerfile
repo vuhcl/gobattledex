@@ -39,8 +39,8 @@ RUN groupadd -g "${GID}" -r django \
   && useradd -d "${APP_HOME}" -g django -l -r -u "${UID}" django
 
 WORKDIR ${APP_HOME}
-COPY manage.py .
-COPY pvpogo_tools config ${APP_HOME}
+COPY --chown=django:django manage.py .
+COPY --chown=django:django pvpogo_tools config ./
 
 COPY --chown=django:django ./.bin/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
