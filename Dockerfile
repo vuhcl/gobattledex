@@ -1,7 +1,3 @@
-# Dockerfile
-# Uses multi-stage builds requiring Docker 17.05 or higher
-# See https://docs.docker.com/develop/develop-images/multistage-build/
-
 # Creating a python base with shared environment variables
 FROM python:3.12.2-slim-bookworm as python-base
 ENV PYTHONUNBUFFERED=1 \
@@ -9,27 +5,29 @@ ENV PYTHONUNBUFFERED=1 \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_HOME="opt/poetry" \
-  POETRY_VIRTUALENVS_IN_PROJECT=true \
   POETRY_VIRTUALENVS_CREATE=false \
   POETRY_NO_INTERACTION=1 \
   POETRY_VERSION=1.8.2 \
-  PYSETUP_PATH="opt/app" \
-  VENV_PATH="opt/app/.venv"
+  PYSETUP_PATH="/opt/app" \
+  VENV_PATH="/opt/app/.venv"
 
 # builder-base is used to build dependencies
 FROM python-base as builder-base
+WORKDIR $PYSETUP_PATH
 RUN apt-get update && apt-get install --no-install-recommends -y \
   build-essential \
   curl \
   libpq-dev \
-  && curl -sSL 'https://install.python-poetry.org' | python3 -
+  && curl -sSL 'https://install.python-poetry.org' | python3 - \
+  # Cleaning cache:
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # We copy our Python requirements here to cache them
 # and install only runtime deps using poetry
-WORKDIR $PYSETUP_PATH
 COPY pyproject.toml .
-RUN poetry lock && poetry install --only main --no-root --no-directory
+RUN export PATH="/root/.local/bin:$PATH" \
+  && poetry lock && poetry install --only main --no-root --no-directory
 
 COPY manage.py .
 COPY pvpogo_tools ./pvpogo_tools/
