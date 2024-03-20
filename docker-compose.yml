@@ -19,7 +19,6 @@ services:
       - postgres
     env_file:
       - .env
-    command: /start
 
   dev:
     build:
@@ -29,15 +28,12 @@ services:
     profiles: [dev]
     init: true
     image: pvpogo_tools_dev_django
-    volumes:
-      - production_django_media:/app/pogo_pvp_tools/media
     depends_on:
       - postgres
     environment:
       - DEBUG=true
     env_file:
       - .env
-    command: /start-dev
 
   postgres:
     image: docker.io/postgres:15
