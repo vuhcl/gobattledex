@@ -17,8 +17,6 @@ services:
       - production_django_media:/app/pvpogo_tools/media
     depends_on:
       - postgres
-    environment:
-      - DEBUG=false
     env_file:
       - .env
     command: /start
@@ -28,6 +26,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
       target: development
+    profiles: [dev]
     init: true
     image: pvpogo_tools_dev_django
     volumes:
@@ -35,7 +34,7 @@ services:
     depends_on:
       - postgres
     environment:
-      - DEBUG=false
+      - DEBUG=true
     env_file:
       - .env
     command: /start

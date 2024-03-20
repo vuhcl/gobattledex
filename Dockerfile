@@ -68,6 +68,7 @@ RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 USER django
+WORKDIR $PYSETUP_PATH
 RUN DATABASE_URL="" \
   DJANGO_SETTINGS_MODULE="config.settings" \
   python manage.py compilemessages
