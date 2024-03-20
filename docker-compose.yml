@@ -37,7 +37,7 @@ services:
       - DEBUG=true
     env_file:
       - .env
-    command: /start
+    command: /start-dev
 
   postgres:
     image: docker.io/postgres:15
@@ -46,3 +46,32 @@ services:
       - production_postgres_data_backups:/backups
     env_file:
       - .env
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs
+    restart: always
+    depends_on:
+      - django
+
+  docs:
+    image: pvpogo_tools_docs
+    profiles: ["docs"]
+    container_name: pvpogo_tools_local_docs
+    build:
+      context: .
+      dockerfile: ./compose/local/docs/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./docs:/docs:z
+      - ./config:/app/config:z
+      - ./pvpogo_tools:/app/pvpogo_tools:z
+    ports:
+      - "9000:9000"
+    command: /start-docs

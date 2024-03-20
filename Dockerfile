@@ -50,7 +50,6 @@ RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["/entrypoint"]
-CMD ["/start-dev"]
 
 FROM python-base as production
 RUN adduser --system --home=$PYSETUP_PATH \
@@ -71,4 +70,3 @@ USER django
 WORKDIR $PYSETUP_PATH
 RUN export PYTHONPATH=/etc/$PYSETUP_PATH:/$PYSETUP_PATH
 ENTRYPOINT [ "/entrypoint" ]
-CMD [ "/start" ]
