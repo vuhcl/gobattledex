@@ -1,4 +1,3 @@
-name: pvpogo-tools
 
 volumes:
   production_postgres_data: {}
@@ -11,10 +10,68 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: gopvp_production_django
-    env_file:
-      - ./.env
-    volumes:
-      - production_django_media:/app/gopvp/media
+      target: production
     init: true
-    command: ./start
+    image: pvpogo_tools_prod_django
+    volumes:
+      - production_django_media:/app/pvpogo_tools/media
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    command: /start
+
+  dev:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: development
+    profiles: [dev]
+    init: true
+    image: pvpogo_tools_dev_django
+    volumes:
+      - production_django_media:/app/pogo_pvp_tools/media
+    depends_on:
+      - postgres
+    environment:
+      - DEBUG=true
+    env_file:
+      - .env
+    command: /start-dev
+
+  postgres:
+    image: docker.io/postgres:15
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data_backups:/backups
+    env_file:
+      - .env
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs
+    restart: always
+    depends_on:
+      - django
+
+  docs:
+    image: pvpogo_tools_docs
+    profiles: ["docs"]
+    container_name: pvpogo_tools_local_docs
+    build:
+      context: .
+      dockerfile: ./compose/local/docs/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./docs:/docs:z
+      - ./config:/app/config:z
+      - ./pvpogo_tools:/app/pvpogo_tools:z
+    ports:
+      - "9000:9000"
+    command: /start-docs

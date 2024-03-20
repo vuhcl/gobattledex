@@ -6,12 +6,8 @@ import socket
 import sys
 from pathlib import Path
 
-# import django_stubs_ext
 import environ
 
-
-# import sentry_sdk
-# from django.template import base
 # from sentry_sdk.integrations.django import DjangoIntegration
 # from sentry_sdk.integrations.logging import LoggingIntegration
 
@@ -20,18 +16,19 @@ import environ
 
 # 0. Setup
 
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
+BASE_DIR = Path(__file__).resolve(strict=True).parent
 APPS_DIR = BASE_DIR / "pvpogo_tools"
-
 env = environ.Env()
-env.read_env(Path(BASE_DIR, ".env").as_posix())
 
-# Monkeypatching Django, so stubs will work for all generics,
-# see: https://github.com/typeddjango/django-stubs
-# django_stubs_ext.monkeypatch()
+READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
+if READ_DOT_ENV_FILE:
+    # OS environment variables take precedence over variables from .env
+    env.read_env(str(BASE_DIR / ".env"))
 
-# Monkeypatching Django templates, to support multiline template tags
-# base.tag_re = re.compile(base.tag_re.pattern, re.DOTALL)
+SECRET_KEY = env(
+    "DJANGO_SECRET_KEY",
+    default="eZPdvuAaLrVY8Kj3DG2QNqJaJc4fPp6iDgYneKN3fkNmqgkcNnoNLkFe3NCRXqW",
+)
 
 # We should strive to only have two possible runtime scenarios: either `DEBUG`
 # is True or it is False. `DEBUG` should be only true in development, and
@@ -39,11 +36,11 @@ env.read_env(Path(BASE_DIR, ".env").as_posix())
 DEBUG = env.bool("DEBUG", default=False)
 
 # `STAGING` is here to allow us to tweak things like urls, smtp servers, etc.
-# between staging and production environments, **NOT** for anything that `DEBUG`
-# would be used for.
+# between staging and production environments, **NOT** for anything that
+# `DEBUG` would be used for.
 STAGING = env.bool("STAGING", default=False)
 
-CAPROVER = env.bool("CAPROVER", default=False)
+CAPROVER = env.bool("CAPROVER", default=True)
 
 # 1. Django Core Settings
 # https://docs.djangoproject.com/en/4.0/ref/settings/
@@ -51,9 +48,9 @@ CAPROVER = env.bool("CAPROVER", default=False)
 if CAPROVER:
     ALLOWED_HOSTS = env.list("CAPROVER_HOSTS", default=["localhost"])
 else:
-    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[
-        "*"] if DEBUG else ["localhost"])
+    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
 
+ROOT_URLCONF = "config.urls"
 
 SITE_ID = 1
 
@@ -65,40 +62,29 @@ DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-DEFAULT_FROM_EMAIL = env(
-    "DEFAULT_FROM_EMAIL",
-    default="",
-)
-
-EMAIL_BACKEND = (
-    "django.core.mail.backends.console.EmailBackend"
-    if DEBUG
-    else "email_relay.backend.RelayDatabaseEmailBackend"
-)
-
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 INSTALLED_APPS = [
     # First Party
     "pvpogo_tools.core",
     "pvpogo_tools.users",
-    # Second Party
-    "django_simple_nav",
-    "django_q_registry",
     # Third Party
     "allauth",
+    "django_simple_nav",
     "allauth.account",
     "allauth.socialaccount",
-    "django_browser_reload",
-    "django_extensions",
     "django_htmx",
+    "ninja",
+    "corsheaders",
+    "sri",
+    "reversion",
+    # "django_q_registry",
     # "health_check",
     # "health_check.db",
     # "health_check.cache",
     # "health_check.storage",
     # "health_check.contrib.migrations",
     "heroicons",
-    "simple_history",
     "template_partials",
     # Django
     "django.contrib.admin",
@@ -109,14 +95,24 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "django.forms",
+    "django.contrib.flatpages",
 ]
 if DEBUG:
+    import django_stubs_ext
+
+    # Monkeypatching Django, so stubs will work for all generics,
+    # see: https://github.com/typeddjango/django-stubs
+    django_stubs_ext.monkeypatch()
+
+    # Monkeypatching Django templates, to support multiline template tags
+    from django.template import base
+    base.tag_re = re.compile(base.tag_re.pattern, re.DOTALL)
     INSTALLED_APPS = [
         "debug_toolbar",
         "whitenoise.runserver_nostatic",
+        "django_extensions",
+        "django_browser_reload",
     ] + INSTALLED_APPS
-
-if DEBUG:
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + [
         "127.0.0.1",
@@ -167,6 +163,7 @@ MIDDLEWARE = [
     # should be first
     "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     # order doesn't matter
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -176,28 +173,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    "simple_history.middleware.HistoryRequestMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
-    "django_flyio.middleware.FlyResponseMiddleware",
-    "django_browser_reload.middleware.BrowserReloadMiddleware",
-    # should be last
-    "django.middleware.cache.FetchFromCacheMiddleware",
 ]
-if DEBUG:
-    MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")
-    MIDDLEWARE.remove("django.middleware.cache.FetchFromCacheMiddleware")
-
-    MIDDLEWARE.insert(
-        MIDDLEWARE.index("django.middleware.common.CommonMiddleware") + 1,
-        "debug_toolbar.middleware.DebugToolbarMiddleware",
-    )
-
-ROOT_URLCONF = "config.urls"
-
-SECRET_KEY = env(
-    "SECRET_KEY",
-    default="eZPdvuAaLrVY8Kj3DG2QNqJaJc4fPp6iDgYneKN3fkNmqgkcNnoNLkFe3NCRXqW",
-)
 
 # SECURITY
 # ------------------------------------------------------------------------------
@@ -235,12 +212,7 @@ X_FRAME_OPTIONS = "DENY"
 # https://fly.io/docs/reference/runtime-environment/#x-forwarded-proto
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-SERVER_EMAIL = env("SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
-
 SESSION_COOKIE_SECURE = not DEBUG
-
-SITE_ID = 1
-
 
 # STATIC & MEDIA
 # ------------------------
@@ -252,9 +224,6 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-
-
-
 # https://nickjanetakis.com/blog/django-4-1-html-templates-are-cached-by-default-with-debug-true
 DEFAULT_LOADERS = [
     "django.template.loaders.filesystem.Loader",
@@ -309,9 +278,7 @@ PASSWORD_HASHERS = [
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"}, #noqa E501
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -402,3 +369,16 @@ ADMIN_URL = "admin/"
 ADMINS = [("""Vu H. Chu-Le""", "vu@uni.minerva.edu")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
+
+
+if DEBUG:
+    MIDDLEWARE += ["django_browser_reload.middleware.BrowserReloadMiddleware"]
+    MIDDLEWARE.remove("django.middleware.cache.UpdateCacheMiddleware")
+
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index("django.middleware.common.CommonMiddleware") + 1,
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    )
+else:
+    # should be last
+    MIDDLEWARE.append("django.middleware.cache.FetchFromCacheMiddleware")
