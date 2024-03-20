@@ -69,10 +69,6 @@ RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   && rm -rf /var/lib/apt/lists/*
 USER django
 WORKDIR $PYSETUP_PATH
-RUN DATABASE_URL="" \
-  DJANGO_SETTINGS_MODULE="config.settings" \
-  python manage.py compilemessages
-
 RUN export PYTHONPATH=/etc/$PYSETUP_PATH:/$PYSETUP_PATH
 ENTRYPOINT [ "/entrypoint" ]
 RUN [ "/start" ]

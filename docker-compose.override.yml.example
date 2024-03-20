@@ -1,9 +1,0 @@
-services:
-  app:
-    # platform: linux/arm64
-
-  db:
-    # platform: linux/amd64
-
-  worker:
-    # platform: linux/amd64
