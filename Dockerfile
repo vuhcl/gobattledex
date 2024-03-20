@@ -39,7 +39,7 @@ COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 COPY ./docker/entrypoint /entrypoint
 RUN chmod +x /entrypoint
 COPY ./docker/start-dev /start-dev
-RUN chmod +x /entrypoint
+RUN chmod +x /start-dev
 
 WORKDIR $PYSETUP_PATH
 
@@ -50,6 +50,7 @@ RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["/entrypoint"]
+CMD ["/start-dev"]
 
 FROM python-base as production
 RUN adduser --system --home=$PYSETUP_PATH \
@@ -70,3 +71,4 @@ USER django
 WORKDIR $PYSETUP_PATH
 RUN export PYTHONPATH=/etc/$PYSETUP_PATH:/$PYSETUP_PATH
 ENTRYPOINT [ "/entrypoint" ]
+CMD [ "/start" ]
