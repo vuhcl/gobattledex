@@ -49,7 +49,6 @@ RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-RUN python manage.py migrate
 ENTRYPOINT ["/entrypoint"]
 RUN ["/start-dev"]
 
