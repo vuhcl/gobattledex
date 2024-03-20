@@ -9,6 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
   POETRY_NO_INTERACTION=1 \
   POETRY_HOME="/opt/app/poetry" \
   POETRY_VERSION=1.8.2 \
+  POETRY_CACHE_DIR='/var/cache/pypoetry' \
   PYSETUP_PATH="/opt/app" \
   VENV_PATH="/opt/app/.venv"
 
@@ -25,7 +26,7 @@ WORKDIR $PYSETUP_PATH
 # We copy our Python requirements here to cache them
 # and install only runtime deps using poetry
 COPY pyproject.toml .
-RUN poetry lock && poetry install --only main --no-root --no-directory
+RUN $POETRY_HOME/bin/poetry lock && $POETRY_HOME/bin/poetry install --only main --no-root --no-directory
 
 COPY manage.py .
 COPY pvpogo_tools ./pvpogo_tools/
@@ -44,7 +45,8 @@ RUN chmod +x /entrypoint
 
 # venv already has runtime deps installed we get a quicker install
 WORKDIR $PYSETUP_PATH
-RUN poetry install --with dev
+RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
+  $POETRY_HOME/bin/poetry install --with dev
 
 RUN python manage.py migrate
 ENTRYPOINT ["/entrypoint"]
@@ -56,12 +58,11 @@ RUN adduser --system --home=$PYSETUP_PATH \
   --shell=/bin/bash django
 # Copying poetry and venv into image
 COPY --from=builder-base $POETRY_HOME $POETRY_HOME
-COPY --chown=django:django --chmod=750 --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-
+COPY --chown=django:django --chmod=750 --from=builder-base . $PYSETUP_PATH
 COPY --chown=django:django docker .
-RUN $POETRY_HOME/bin/poetry install --only main
+RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
+  $POETRY_HOME/bin/poetry install --only main
 USER django
 RUN export PYTHONPATH=/etc/$PYSETUP_PATH:/$PYSETUP_PATH
-WORKDIR $PYSETUP_PATH
 ENTRYPOINT ["/entrypoint"]
 CMD ["/start"]
