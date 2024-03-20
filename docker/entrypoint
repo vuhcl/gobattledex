@@ -4,9 +4,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-
-
-
 if [ -z "$POSTGRES_USER" ]; then
     base_postgres_image_default_user='postgres'
     export POSTGRES_USER="${base_postgres_image_default_user}"
@@ -37,8 +34,7 @@ while True:
 
         if time.time() - start > suggest_unrecoverable_after:
             sys.stderr.write("  This is taking longer than expected. The following exception may be indicative of an unrecoverable error: '{}'\n".format(error))
-
-time.sleep(100000)
+    time.sleep(10)
 END
 
 >&2 echo 'PostgreSQL is available'

@@ -12,13 +12,30 @@ services:
       dockerfile: ./Dockerfile
       target: production
     init: true
-    image: pogo_pvp_tools_production_django
+    image: pvpogo_tools_prod_django
+    volumes:
+      - production_django_media:/app/pvpogo_tools/media
+    depends_on:
+      - postgres
+    environment:
+      - DEBUG=false
+    env_file:
+      - .env
+    command: /start
+
+  dev:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: development
+    init: true
+    image: pvpogo_tools_dev_django
     volumes:
       - production_django_media:/app/pogo_pvp_tools/media
     depends_on:
       - postgres
     environment:
-      - DEBUG=true
+      - DEBUG=false
     env_file:
       - .env
     command: /start
