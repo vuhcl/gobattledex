@@ -7,35 +7,29 @@ ENV PYTHONUNBUFFERED=1 \
   PIP_DEFAULT_TIMEOUT=100 \
   POETRY_VIRTUALENVS_CREATE=false \
   POETRY_NO_INTERACTION=1 \
+  POETRY_HOME="/opt/app/poetry" \
   POETRY_VERSION=1.8.2 \
   PYSETUP_PATH="/opt/app" \
   VENV_PATH="/opt/app/.venv"
 
 # builder-base is used to build dependencies
 FROM python-base as builder-base
-WORKDIR $PYSETUP_PATH
 RUN apt-get update && apt-get install --no-install-recommends -y \
   build-essential \
   curl \
   libpq-dev \
-  && curl -sSL 'https://install.python-poetry.org' | python3 - \
-  # Cleaning cache:
-  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+  && curl -sSL 'https://install.python-poetry.org' | POETRY_HOME=${POETRY_HOME} python3 -
+
+WORKDIR $PYSETUP_PATH
 
 # We copy our Python requirements here to cache them
 # and install only runtime deps using poetry
 COPY pyproject.toml .
-RUN export PATH="/root/.local/bin:$PATH" \
-  && poetry lock && poetry install --only main --no-root --no-directory
+RUN poetry lock && poetry install --only main --no-root --no-directory
 
 COPY manage.py .
 COPY pvpogo_tools ./pvpogo_tools/
 COPY config ./config/
-
-RUN adduser --system --home=$PYSETUP_PATH \
-  --no-create-home --disabled-password --group \
-  --shell=/bin/bash django
 
 # 'development' stage installs all dev deps and can be used to develop code.
 # For example using docker-compose to mount local volume under /app
@@ -57,15 +51,17 @@ ENTRYPOINT ["/entrypoint"]
 CMD [ "uvicorn", "config.asgi:application", "--host", "0.0.0.0", "--reload", "--reload-include", "*.html"]
 
 FROM python-base as production
+RUN adduser --system --home=$PYSETUP_PATH \
+  --no-create-home --disabled-password --group \
+  --shell=/bin/bash django
 # Copying poetry and venv into image
 COPY --from=builder-base $POETRY_HOME $POETRY_HOME
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-RUN chmod 750 django:django $PYSETUP_PATH
+COPY --chown=django:django --chmod=750 --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 
-COPY --chown=django:django --from=builder-base docker .
+COPY --chown=django:django docker .
+RUN $POETRY_HOME/bin/poetry install --only main
 USER django
-WORKDIR /app
-RUN poetry install --only main
 RUN export PYTHONPATH=/etc/$PYSETUP_PATH:/$PYSETUP_PATH
+WORKDIR $PYSETUP_PATH
 ENTRYPOINT ["/entrypoint"]
 CMD ["/start"]
