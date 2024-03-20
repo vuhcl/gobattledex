@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent
 APPS_DIR = BASE_DIR / "pvpogo_tools"
 env = environ.Env()
 
-READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
+READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(BASE_DIR / ".env"))
@@ -44,7 +44,7 @@ DEBUG = env.bool("DEBUG", default=False)
 # would be used for.
 STAGING = env.bool("STAGING", default=False)
 
-CAPROVER = env.bool("CAPROVER", default=False)
+CAPROVER = env.bool("CAPROVER", default=True)
 
 # 1. Django Core Settings
 # https://docs.djangoproject.com/en/4.0/ref/settings/
@@ -253,9 +253,6 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-
-
-
 # https://nickjanetakis.com/blog/django-4-1-html-templates-are-cached-by-default-with-debug-true
 DEFAULT_LOADERS = [
     "django.template.loaders.filesystem.Loader",

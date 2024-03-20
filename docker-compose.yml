@@ -16,8 +16,10 @@ services:
       - production_django_media:/app/pogo_pvp_tools/media
     depends_on:
       - postgres
+    environment:
+      - DEBUG=true
     env_file:
-      - ./.env
+      - .env
     command: /start
 
   postgres:
@@ -26,4 +28,4 @@ services:
       - production_postgres_data:/var/lib/postgresql/data
       - production_postgres_data_backups:/backups
     env_file:
-      - ./.env
+      - .env
