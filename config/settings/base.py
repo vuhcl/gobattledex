@@ -1,5 +1,6 @@
 # ruff: noqa: ERA001, E501
 """Base settings to build other settings files upon."""
+from __future__ import annotations
 
 from pathlib import Path
 
@@ -36,11 +37,9 @@ LANGUAGE_CODE = "en-us"
 # https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
-USE_I18N = True
+USE_I18N = False
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
-# https://docs.djangoproject.com/en/dev/ref/settings/#locale-paths
-LOCALE_PATHS = [str(BASE_DIR / "locale")]
 
 # DATABASES
 # ------------------------------------------------------------------------------
