@@ -59,6 +59,7 @@ services:
       - "443:443"
     volumes:
       - prod_django_media:/usr/share/nginx/media:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro`
       - ./certs:/etc/nginx/certs
     restart: always
     depends_on:
