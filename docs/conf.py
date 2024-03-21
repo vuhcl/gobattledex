@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Django setup -----------------------------------------------------------
 # This is required to import Django code in Sphinx using autodoc.
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "pvpogo_tools.settings.local"
+os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings.local"
 django.setup()
 
 

@@ -16,7 +16,8 @@ services:
     volumes:
       - prod_django_media:/app/pvpogo_tools/media
     depends_on:
-      - postgres
+      postgres:
+        condition: "service_started"
     env_file:
       - .env
     command: [/start]
@@ -30,7 +31,8 @@ services:
     init: true
     image: pvpogo_tools_dev_django
     depends_on:
-      - postgres
+      postgres:
+        condition: "service_started"
     environment:
       - DEBUG=true
     env_file:

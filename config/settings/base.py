@@ -8,7 +8,7 @@ import environ
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # pogo_pvp_tools/
-APPS_DIR = BASE_DIR / "pogo_pvp_tools"
+APPS_DIR = BASE_DIR / "pvpogo_tools"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)

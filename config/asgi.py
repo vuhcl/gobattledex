@@ -1,4 +1,3 @@
-
 # ruff: noqa
 import os
 import sys
@@ -10,7 +9,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 sys.path.append(str(BASE_DIR / "pvpogo_tools"))
 
 # If DJANGO_SETTINGS_MODULE is unset, default to the local settings
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 
 # This application object is used by any ASGI server configured to use this file.
 django_application = get_asgi_application()

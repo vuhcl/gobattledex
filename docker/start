@@ -5,11 +5,11 @@ set -o pipefail
 set -o nounset
 
 echo "Collecting staticfiles..."
-python /app/manage.py collectstatic --noinput
-python /app/manage.py compress
+python manage.py collectstatic --noinput
+python manage.py compress
 
 echo "Applying migrations..."
-python /app/manage.py migrate
+python manage.py migrate
 
 echo "Starting server..."
 exec /usr/local/bin/gunicorn config.asgi -k uvicorn.workers.UvicornWorker --config python:config.gunicorn
