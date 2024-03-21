@@ -7,7 +7,7 @@ from pathlib import Path
 from django.core.wsgi import get_wsgi_application
 
 # This allows easy placement of apps within the interior
-# pogo_pvp_tools directory.
+# pvpogo_tools directory.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 sys.path.append(str(BASE_DIR / "pvpogo_tools"))
 # We defer to a DJANGO_SETTINGS_MODULE already in the environment. This breaks

@@ -26,7 +26,7 @@ if __name__ == "__main__":
         raise
 
     # This allows easy placement of apps within the interior
-    # pogo_pvp_tools directory.
+    # pvpogo_tools directory.
     current_path = Path(__file__).parent.resolve()
     sys.path.append(str(current_path / "pvpogo_tools"))
 

@@ -7,7 +7,7 @@ from pathlib import Path
 import environ
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-# pogo_pvp_tools/
+# pvpogo_tools/
 APPS_DIR = BASE_DIR / "pvpogo_tools"
 env = environ.Env()
 
@@ -85,8 +85,8 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "pogo_pvp_tools.users",
-    "pogo_pvp_tools.gamemaster",
+    "pvpogo_tools.users",
+    "pvpogo_tools.gamemaster",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -95,7 +95,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # MIGRATIONS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#migration-modules
-MIGRATION_MODULES = {"sites": "pogo_pvp_tools.contrib.sites.migrations"}
+MIGRATION_MODULES = {"sites": "pvpogo_tools.contrib.sites.migrations"}
 
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
@@ -191,7 +191,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "pogo_pvp_tools.users.context_processors.allauth_settings",
+                "pvpogo_tools.users.context_processors.allauth_settings",
             ],
         },
     },
@@ -274,13 +274,13 @@ ACCOUNT_EMAIL_REQUIRED = True
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_ADAPTER = "pogo_pvp_tools.users.adapters.AccountAdapter"
+ACCOUNT_ADAPTER = "pvpogo_tools.users.adapters.AccountAdapter"
 # https://docs.allauth.org/en/latest/account/forms.html
-ACCOUNT_FORMS = {"signup": "pogo_pvp_tools.users.forms.UserSignupForm"}
+ACCOUNT_FORMS = {"signup": "pvpogo_tools.users.forms.UserSignupForm"}
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_ADAPTER = "pogo_pvp_tools.users.adapters.SocialAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "pvpogo_tools.users.adapters.SocialAccountAdapter"
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_FORMS = {"signup": "pogo_pvp_tools.users.forms.UserSocialSignupForm"}
+SOCIALACCOUNT_FORMS = {"signup": "pvpogo_tools.users.forms.UserSocialSignupForm"}
 # django-compressor
 # ------------------------------------------------------------------------------
 # https://django-compressor.readthedocs.io/en/latest/quickstart/#installation
