@@ -10,7 +10,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      target: production
     init: true
     image: gbd_prod_django
     volumes:
@@ -20,7 +19,6 @@ services:
         condition: "service_started"
     env_file:
       - .env
-    command: [/start]
 
   dev:
     build:
