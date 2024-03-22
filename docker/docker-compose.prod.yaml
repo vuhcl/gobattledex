@@ -2,7 +2,7 @@ version: "3.8"
 services:
   nginx-proxy:
     image: "srv-captain--gbd-proxy"
-    restart: unless-stopped
+    restart: always
     volumes:
       - django_static:/var/www/django/static  # serving django's statics
       - django_media:/var/www/django/media  # serving django's media
