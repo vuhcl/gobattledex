@@ -47,6 +47,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/postgres/Dockerfile
+    image: gbd_postgres
     volumes:
       - prod_postgres_data:/var/lib/postgresql/data
       - dev_postgres_data:/var/lib/postgresql/dev-data

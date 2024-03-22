@@ -50,7 +50,8 @@ FROM python-base as production
 RUN adduser --system --home=$PYSETUP_PATH \
   --no-create-home --disabled-password --group \
   --shell=/bin/bash django
-COPY --chown=django:django --chmod=750 --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
+COPY --chown=django:django --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
+RUN chown -R django:django $PYSETUP_PATH
 COPY --chown=django:django docker/entrypoint /entrypoint
 RUN chmod +x /entrypoint
 COPY --chown=django:django docker/start /start
@@ -64,5 +65,4 @@ RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   curl \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-USER django
 ENTRYPOINT [ "/entrypoint" ]

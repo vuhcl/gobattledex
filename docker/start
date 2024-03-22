@@ -6,7 +6,7 @@ set -o nounset
 
 echo "Collecting staticfiles..."
 python manage.py collectstatic --noinput
-python manage.py compress
+python manage.py compress --follow-links
 
 echo "Applying migrations..."
 python manage.py migrate

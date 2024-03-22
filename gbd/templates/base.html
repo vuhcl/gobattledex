@@ -11,8 +11,12 @@
     </title>
     <meta name="description" content="">
     <meta name="author" content="">
-    {% block css %}
-    {% endblock css %}
+    {% compress css %}
+      <link href="{% static 'css/project.css' %}" rel="stylesheet" />
+      {% block css %}
+      {% endblock css %}  
+    {% endcompress %}
+    {% compress javascript %}
     <script src="https://unpkg.com/htmx.org@1.9.10"
             integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
             crossorigin="anonymous"></script>
@@ -62,6 +66,7 @@
             crossorigin="anonymous"></script>
     {% block javascript_head %}
     {% endblock javascript_head %}
+  {% endcompress %}
   </head>
   {% block body %}
     <body {% if debug %}class="debug-screens"{% endif %}
