@@ -5,8 +5,8 @@ admin_email: ""
 author_name: Vu H. Chu-Le
 current_version: 2024.3.1
 default_from_email: ""
-django_version: "5.0"
-domain_name: pvpogo.tools.com
+django_version: "5.0.3"
+domain_name: gobattledex.com
 extra_requirements_files:
 github_owner: Vu H. Chu-Le
 github_repo: gbd

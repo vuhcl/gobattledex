@@ -9,7 +9,7 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
 from .base import *  # noqa: F403
-from .base import DATABASES, INSTALLED_APPS, env
+from .base import DATABASES, INSTALLED_APPS, STATIC_URL, env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -179,6 +179,9 @@ sentry_sdk.init(
     environment=env("SENTRY_ENVIRONMENT", default="production"),
     traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),
 )
+
+# Your stuff...
+# ------------------------------------------------------------------------------
 
 # Your stuff...
 # ------------------------------------------------------------------------------
