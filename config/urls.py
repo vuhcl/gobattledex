@@ -3,10 +3,12 @@ from __future__ import annotations
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
-from health_check.views import MainView
 
 from gbd import __version__
 from gbd.core import views as core_views
+
+# from health_check.views import MainView
+
 
 admin_header = f" v{__version__}"
 admin.site.enable_nav_sidebar = False
@@ -30,7 +32,7 @@ urlpatterns = [
     path("500/", core_views.custom_error_500, name="500"),
     path("accounts/", include("allauth.urls")),
     path("admin/", admin.site.urls),
-    path("health/", MainView.as_view()),
+    # path("health/", MainView.as_view()),
     path("", core_views.index, name="index"),
 ]
 
@@ -47,4 +49,5 @@ if settings.DEBUG:
     urlpatterns = [
         path("__debug__/", include("debug_toolbar.urls")),
         path("__reload__/", include("django_browser_reload.urls")),
+    ] + urlpatterns
     ] + urlpatterns

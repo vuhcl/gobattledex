@@ -78,6 +78,7 @@ THIRD_PARTY_APPS = [
     "django_simple_nav",
     "heroicons",
     "template_partials",
+    "health_check",
 ]
 
 LOCAL_APPS = [
