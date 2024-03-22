@@ -4,6 +4,13 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+if [ -z "$POSTGRES_USER" ]; then
+    base_postgres_image_default_user='postgres'
+    export POSTGRES_USER="${base_postgres_image_default_user}"
+fi
+export DATABASE_URL="psql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+echo "Postgres ${DJANGO_DATABASE_HOST}:${DJANGO_DATABASE_PORT} is up"
+
 echo "Collecting staticfiles..."
 python manage.py collectstatic --noinput
 python manage.py compress --follow-links
@@ -12,4 +19,4 @@ echo "Applying migrations..."
 python manage.py migrate
 
 echo "Starting server..."
-exec /usr/local/bin/gunicorn config.asgi -k uvicorn.workers.UvicornWorker --config python:config.gunicorn
+exec /usr/local/bin/gunicorn config.asgi -k uvicorn.workers.UvicornWorker --config python:gunicorn

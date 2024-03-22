@@ -1,0 +1,73 @@
+
+volumes:
+  postgres_data: {}
+  postgres_backups: {}
+  django_static: {}
+
+services:
+  django:
+    <<: &django
+      image: gbd-django:dev
+      build:
+        context: .
+        dockerfile: ./Dockerfile
+        target: development
+        args:
+          DJANGO_ENV: development
+        cache_from:
+          - "gbd-django:dev"
+          - "gbd-django:latest"
+          - "*"
+      
+      volumes:
+        - django_static:/var/www/django/static
+      depends_on:
+        postgres:
+          condition: "service_started"
+      environment:
+        - DEBUG=true
+      env_file:
+        - .env
+      networks:
+        - default
+        - dbnet 
+    init: true      
+    command:
+      - host="0.0.0.0"
+      - port="8000"
+      - forwarded_allow_ips="*"
+      - reload_include="*.html"
+
+  postgres:
+    image: "postgres:16-alpine"
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dbnet
+    env_file: .env
+    
+  docs:
+    image: gbd_docs
+    profiles: [docs]
+    container_name: gbd-local-docs
+    build:
+      context: .
+      dockerfile: ./compose/local/docs/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./docs:/docs:z
+      - ./config:/app/config:z
+      - ./gbd:/app/gbd:z
+    ports:
+      - "9000:9000"
+    command: /start-docs
+
+  # This task is an example of how to extend existing ones:
+  #   some_worker:
+  #     <<: *django
+  #     command: python manage.py worker_process
+
+networks:
+  dbnet:

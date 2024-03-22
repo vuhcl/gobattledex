@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  nginx-proxy:
+    image: "srv-captain--gbd-proxy"
+    restart: unless-stopped
+    volumes:
+      - django_static:/var/www/django/static  # serving django's statics
+      - django_media:/var/www/django/media  # serving django's media
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    networks:
+      - proxynet
+      - outside
+
+  web:
+    <<: &web
+      # Image for production:
+      image: "ghrc.io/vuhcl/gbd-django:latest"
+      build:
+        target: final
+        args:
+          DJANGO_ENV: production
+      restart: unless-stopped
+      volumes:
+        - django_media:/var/www/django/media 
+    networks:
+      - proxynet
+    expose:
+      - "5000"
+
+# This task is an example of how to extend existing ones:
+#   some_worker:
+#     <<: *django
+#     command: python manage.py worker_process
+#     deploy:
+#       replicas: 2
+
+networks:
+  proxynet:
+    driver: overlay
+    attachable: true
+  outside:
+    external: true
+volumes:
+  django_media:
