@@ -7,8 +7,8 @@ from pathlib import Path
 import environ
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
-# pvpogo_tools/
-APPS_DIR = BASE_DIR / "pvpogo_tools"
+# gbd/
+APPS_DIR = BASE_DIR / "gbd"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
@@ -27,13 +27,6 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 TIME_ZONE = "America/Los_Angeles"
 # https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = "en-us"
-# https://docs.djangoproject.com/en/dev/ref/settings/#languages
-# from django.utils.translation import gettext_lazy as _
-# LANGUAGES = [
-#     ('en', _('English')),
-#     ('fr-fr', _('French')),
-#     ('pt-br', _('Portuguese')),
-# ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
@@ -82,11 +75,15 @@ THIRD_PARTY_APPS = [
     "django_htmx",
     "sri",
     "reversion",
+    "django_simple_nav",
+    "heroicons",
+    "template_partials",
 ]
 
 LOCAL_APPS = [
-    "pvpogo_tools.users",
-    "pvpogo_tools.gamemaster",
+    "gbd.users",
+    "gbd.gamemaster",
+    "gbd.core"
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -95,7 +92,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # MIGRATIONS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#migration-modules
-MIGRATION_MODULES = {"sites": "pvpogo_tools.contrib.sites.migrations"}
+MIGRATION_MODULES = {"sites": "gbd.contrib.sites.migrations"}
 
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
@@ -191,7 +188,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "pvpogo_tools.users.context_processors.allauth_settings",
+                "gbd.users.context_processors.allauth_settings",
             ],
         },
     },
@@ -217,6 +214,8 @@ SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
 X_FRAME_OPTIONS = "DENY"
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
 
 # EMAIL
 # ------------------------------------------------------------------------------
@@ -274,13 +273,13 @@ ACCOUNT_EMAIL_REQUIRED = True
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_ADAPTER = "pvpogo_tools.users.adapters.AccountAdapter"
+ACCOUNT_ADAPTER = "gbd.users.adapters.AccountAdapter"
 # https://docs.allauth.org/en/latest/account/forms.html
-ACCOUNT_FORMS = {"signup": "pvpogo_tools.users.forms.UserSignupForm"}
+ACCOUNT_FORMS = {"signup": "gbd.users.forms.UserSignupForm"}
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_ADAPTER = "pvpogo_tools.users.adapters.SocialAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "gbd.users.adapters.SocialAccountAdapter"
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_FORMS = {"signup": "pvpogo_tools.users.forms.UserSocialSignupForm"}
+SOCIALACCOUNT_FORMS = {"signup": "gbd.users.forms.UserSocialSignupForm"}
 # django-compressor
 # ------------------------------------------------------------------------------
 # https://django-compressor.readthedocs.io/en/latest/quickstart/#installation

@@ -1,8 +1,8 @@
 # ruff: noqa: E501
+from __future__ import annotations
+
 from .base import *  # noqa: F403
-from .base import INSTALLED_APPS
-from .base import MIDDLEWARE
-from .base import env
+from .base import INSTALLED_APPS, MIDDLEWARE, env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -58,7 +58,6 @@ if env("USE_DOCKER") == "yes":
 # django-extensions
 # ------------------------------------------------------------------------------
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
-INSTALLED_APPS += ["django_extensions"]
-
+INSTALLED_APPS += ["django_extensions", "django_browser_reload"]
 # Your stuff...
 # ------------------------------------------------------------------------------

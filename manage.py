@@ -26,8 +26,8 @@ if __name__ == "__main__":
         raise
 
     # This allows easy placement of apps within the interior
-    # pvpogo_tools directory.
+    # gbd directory.
     current_path = Path(__file__).parent.resolve()
-    sys.path.append(str(current_path / "pvpogo_tools"))
+    sys.path.append(str(current_path / "gbd"))
 
     execute_from_command_line(sys.argv)

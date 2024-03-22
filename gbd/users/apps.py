@@ -4,6 +4,6 @@ from django.apps import AppConfig
 
 
 class UsersConfig(AppConfig):
-    name = "pvpogo_tools.users"
+    name = "gbd.users"
     label = "users"
     verbose_name = "Users"

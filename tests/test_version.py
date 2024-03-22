@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pvpogo_tools import __version__
+from gbd import __version__
 
 
 def test_version():

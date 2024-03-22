@@ -27,7 +27,7 @@ RUN curl -sSL 'https://install.python-poetry.org' | POETRY_HOME=${PYSETUP_PATH} 
 FROM python-base as builder-base
 WORKDIR $PYSETUP_PATH
 COPY manage.py $PYSETUP_PATH
-COPY pvpogo_tools $PYSETUP_PATH/pvpogo_tools/
+COPY gbd $PYSETUP_PATH/gbd/
 COPY config $PYSETUP_PATH/config/
 
 # 'development' stage installs all dev deps and can be used to develop code.

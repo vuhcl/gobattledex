@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from django.conf import settings
 from django.contrib import admin
-from django.urls import include
-from django.urls import path
+from django.urls import include, path
 from health_check.views import MainView
 
-from pvpogo_tools import __version__
-from pvpogo_tools.core import views as core_views
+from gbd import __version__
+from gbd.core import views as core_views
 
 admin_header = f" v{__version__}"
 admin.site.enable_nav_sidebar = False
@@ -35,8 +34,8 @@ urlpatterns = [
     path("", core_views.index, name="index"),
 ]
 
-handler404 = "pvpogo_tools.core.views.custom_error_404"  # noqa: F811
-handler500 = "pvpogo_tools.core.views.custom_error_500"  # noqa: F811
+handler404 = "gbd.core.views.custom_error_404"  # noqa: F811
+handler500 = "gbd.core.views.custom_error_500"  # noqa: F811
 
 
 if settings.DEBUG:

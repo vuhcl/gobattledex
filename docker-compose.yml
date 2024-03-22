@@ -12,9 +12,9 @@ services:
       dockerfile: ./Dockerfile
       target: production
     init: true
-    image: pvpogo_tools_prod_django
+    image: gbd_prod_django
     volumes:
-      - prod_django_media:/app/pvpogo_tools/media
+      - prod_django_media:/app/gbd/media
     depends_on:
       postgres:
         condition: "service_started"
@@ -29,7 +29,7 @@ services:
       target: development
     profiles: [dev]
     init: true
-    image: pvpogo_tools_dev_django
+    image: gbd_dev_django
     depends_on:
       postgres:
         condition: "service_started"
@@ -68,9 +68,9 @@ services:
       - django
 
   # docs:
-  #   image: pvpogo_tools_docs
+  #   image: gbd_docs
   #   profiles: [docs]
-  #   container_name: pvpogo_tools_local_docs
+  #   container_name: gbd_local_docs
   #   build:
   #     context: .
   #     dockerfile: ./compose/local/docs/Dockerfile
@@ -79,7 +79,7 @@ services:
   #   volumes:
   #     - ./docs:/docs:z
   #     - ./config:/app/config:z
-  #     - ./pvpogo_tools:/app/pvpogo_tools:z
+  #     - ./gbd:/app/gbd:z
   #   ports:
   #     - "9000:9000"
   #   command: /start-docs

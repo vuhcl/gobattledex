@@ -33,8 +33,8 @@
     Using `pyenv` and `pyenv-virtualenv`:
 
     ```sh
-    pyenv virtualenv 3.12 pvpogo_tools-3.12
-    pyenv local pvpogo_tools-3.12
+    pyenv virtualenv 3.12 gbd-3.12
+    pyenv local gbd-3.12
     ```
 
 3. Run the setup script:

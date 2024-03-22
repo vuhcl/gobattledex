@@ -7,7 +7,7 @@ tag = false
 version_pattern = "YYYY.MM.INC1"
 
 [tool.bumpver.file_patterns]
-"pvpogo_tools/__init__.py" = [
+"gbd/__init__.py" = [
   '__version__ = "{version}"'
 ]
 "tests/test_version.py" = [
@@ -27,16 +27,16 @@ exclude_lines = [
 [tool.coverage.run]
 omit = [
   "*/node_modules/*",
-  "pvpogo_tools/*/migrations/*",
-  "pvpogo_tools/asgi.py",
-  "pvpogo_tools/wsgi.py",
+  "gbd/*/migrations/*",
+  "gbd/asgi.py",
+  "gbd/wsgi.py",
   "templates/*",
   "tests/*",
   "manage.py",
   "requirements.txt"
 ]
 plugins = ["django_coverage_plugin"]
-source = ["pvpogo_tools"]
+source = ["gbd"]
 
 [tool.django-stubs]
 django_settings_module = "config.settings.local"
@@ -48,7 +48,7 @@ indent = 2
 [tool.mypy]
 check_untyped_defs = true
 files = [
-  "pvpogo_tools"
+  "gbd"
 ]
 no_implicit_optional = true
 plugins = [
@@ -61,7 +61,7 @@ warn_unused_ignores = true
 [[tool.mypy.overrides]]
 ignore_errors = true
 module = [
-  "pvpogo_tools.*.migrations.*",
+  "gbd.*.migrations.*",
   "tests.*"
 ]
 
@@ -142,7 +142,7 @@ unfixable = []
 
 [tool.ruff.lint.isort]
 force-single-line = true
-known-first-party = ["pvpogo_tools"]
+known-first-party = ["gbd"]
 required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.per-file-ignores]

@@ -6,8 +6,8 @@ export DATABASE_URL := env_var_or_default('DATABASE_URL', 'postgres://postgres:p
     just --list
 
 venv:
-    pyenv virtualenv 3.12 pvpogo_tools-3.12
-    pyenv local pvpogo_tools-3.12
+    pyenv virtualenv 3.12 gbd-3.12
+    pyenv local gbd-3.12
 
 bootstrap:
     just install

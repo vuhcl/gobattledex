@@ -4,6 +4,6 @@ from django.apps import AppConfig
 
 
 class CoreConfig(AppConfig):
-    name = "pvpogo_tools.core"
+    name = "gbd.core"
     label = "core"
     verbose_name = "Core"

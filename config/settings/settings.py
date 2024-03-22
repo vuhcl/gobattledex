@@ -17,7 +17,7 @@ import environ
 # 0. Setup
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent
-APPS_DIR = BASE_DIR / "pvpogo_tools"
+APPS_DIR = BASE_DIR / "gbd"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
@@ -66,8 +66,8 @@ FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 INSTALLED_APPS = [
     # First Party
-    "pvpogo_tools.core",
-    "pvpogo_tools.users",
+    "gbd.core",
+    "gbd.users",
     # Third Party
     "allauth",
     "django_simple_nav",
@@ -119,7 +119,7 @@ if DEBUG:
         "10.0.2.2",
     ]
 
-MIGRATION_MODULES = {"sites": "pvpogo_tools.contrib.sites.migrations"}
+MIGRATION_MODULES = {"sites": "gbd.contrib.sites.migrations"}
 
 LANGUAGE_CODE = "en-us"
 
@@ -146,9 +146,9 @@ LOGGING = {
             "handlers": ["stdout"],
             "level": env("DJANGO_LOG_LEVEL", default="INFO"),
         },
-        "pvpogo_tools": {
+        "gbd": {
             "handlers": ["stdout"],
-            "level": env("PVPOGO_TOOLS_LOG_LEVEL", default="INFO"),
+            "level": env("gbd_LOG_LEVEL", default="INFO"),
         },
     },
 }
