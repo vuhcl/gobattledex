@@ -15,6 +15,7 @@ ENV PYTHONUNBUFFERED=1 \
   POETRY_CACHE_DIR="var/cache/pypoetry" \
   PYSETUP_PATH="/opt/app"
 ENV PATH="$PYSETUP_PATH/bin:$PATH"
+WORKDIR $PYSETUP_PATH
 RUN apt-get update && apt-get upgrade -y \
   && apt-get install --no-install-recommends -y \
   bash \
@@ -33,7 +34,6 @@ RUN groupadd -g "${GID}" -r django \
   # Static and media files:
   && mkdir -p '/var/www/django/static' '/var/www/django/media' \
   && chown django:django '/var/www/django/static' '/var/www/django/media'
-WORKDIR $PYSETUP_PATH
 # Copy only requirements, to cache them in docker layer
 COPY --chown=django:django poetry.lock pyproject.toml $PYSETUP_PATH/
 COPY manage.py $PYSETUP_PATH
@@ -66,7 +66,7 @@ RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   curl \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-FROM production as final
+FROM python-base as final
 ENV PATH="/opt/venv/bin:$PATH"
 COPY --chown=django:django . $PYSETUP_PATH
 USER django
