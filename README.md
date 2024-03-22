@@ -1,4 +1,4 @@
-# pvpogo-tools
+# gbd
 
 ## Requirements
 
@@ -18,7 +18,7 @@
 1. Clone this repository:
 
     ```sh
-    git clone https://github.com/vuhcl/pvpogo-tools
+    git clone https://github.com/vuhcl/gbd
     ```
 
 2. Create and activate a virtual environment.

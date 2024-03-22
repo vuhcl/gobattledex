@@ -9,15 +9,15 @@ django_version: "5.0"
 domain_name: pvpogo.tools.com
 extra_requirements_files:
 github_owner: Vu H. Chu-Le
-github_repo: pvpogo-tools
+github_repo: gbd
 include_vite: false
 include_weasyprint: false
 module_name: gbd
-op_vault: pvpogo-tools
+op_vault: gbd
 postgres_docker_image: postgres
 postgres_docker_version: "15"
-project_name: pvpogo-tools
+project_name: gbd
 python_version: "3.12"
 sentry_dsn: ""
 sentry_org: ""
-sentry_project: pvpogo-tools
+sentry_project: gbd
