@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && rm -rf /var/lib/apt/lists/*
 ENV PATH="$PYSETUP_PATH/bin:$PATH"
 RUN curl -sSL 'https://install.python-poetry.org' | POETRY_HOME=${PYSETUP_PATH} python3 - \
-  && poetry install --only main --no-root --no-directory
+  && poetry install --only main --no-root --no-directory --sync
 
 FROM python-base as builder-base
 WORKDIR $PYSETUP_PATH
@@ -60,7 +60,7 @@ WORKDIR $PYSETUP_PATH
 RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   poetry run pip install -U pip \
   && poetry install --only main --sync \
-  && DEBIAN_FRONTEND=noninteractive apt-get remove -y --purge \
+  && apt-get remove -y --purge \
   build-essential \
   curl \
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
