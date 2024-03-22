@@ -66,6 +66,7 @@ RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
 ENTRYPOINT [ "/entrypoint" ]
 
 FROM production as final
-ENV PATH="$PYSETUP_PATH/bin:$PATH"
+ENV PATH="/opt/venv/bin:$PATH"
 COPY --chown=django:django . $PYSETUP_PATH
+USER django
 CMD [ "/start" ]
