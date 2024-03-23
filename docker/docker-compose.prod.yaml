@@ -10,22 +10,22 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
-      - web
+      - django
     networks:
       - proxynet
       - outside
 
-  web:
-    <<: &web
+  django:
+    <<: &django
       # Image for production:
       image: "ghrc.io/vuhcl/gbd-django:latest"
       build:
-        target: final
+        target: production
         args:
           DJANGO_ENV: production
       restart: unless-stopped
       volumes:
-        - django_media:/var/www/django/media 
+        - django_media:/var/www/django/media
     networks:
       - proxynet
     expose:

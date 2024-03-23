@@ -11,12 +11,9 @@ ENV PYTHONUNBUFFERED=1 \
   PIP_ROOT_USER_ACTION=ignore \
   # poetry:
   POETRY_NO_INTERACTION=1 \
-  POETRY_VIRTUALENVS_CREATE=false \
-  POETRY_CACHE_DIR="var/cache/pypoetry" \
+  POETRY_VIRTUALENVS_IN_PROJECT=true \
   PYSETUP_PATH="/opt/app"
-RUN apt-get update && apt-get upgrade -y \
-  && apt-get install --no-install-recommends -y \
-  bash \
+RUN apt-get update && apt-get install --no-install-recommends -y \
   build-essential \
   curl \
   libpq-dev \
@@ -25,28 +22,28 @@ RUN apt-get update && apt-get upgrade -y \
   && rm -rf /var/lib/apt/lists/*
 WORKDIR ${PYSETUP_PATH}
 
-FROM python-base as development
-# 'development' stage installs all dev deps and can be used to develop code.
-# For example using docker compose to mount local volume
-ENV DJANGO_ENV='development'
 RUN groupadd -g "${GID}" -r django \
   && useradd -d "$PYSETUP_PATH" -g django -l -r -u "${UID}" django \
   && chown django:django -R "$PYSETUP_PATH" \
   # Static and media files:
   && mkdir -p '/var/www/django/static' '/var/www/django/media' \
   && chown django:django '/var/www/django/static' '/var/www/django/media'
+
+FROM python-base as development
+# 'development' stage installs all dev deps and can be used to develop code.
+# For example using docker compose to mount local volume
+ENV DJANGO_ENV='development'
 # Copy only requirements, to cache them in docker layer
 COPY --chown=django:django poetry.lock pyproject.toml $PYSETUP_PATH/
-RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
-  poetry run pip install -U pip \
+RUN poetry run pip install -U pip \
   && poetry install --with dev
 ENTRYPOINT [ "uvicorn", "config.asgi", "--reload"]
 
 FROM python-base as production
 ENV DJANGO_ENV='production'
 COPY --chown=django:django . $PYSETUP_PATH
-RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
-  poetry install --only main --sync \
+RUN poetry run pip install -U pip \
+  && poetry install --only main --sync \
   && apt-get remove -y --purge \
   build-essential \
   curl \
