@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   nginx-proxy:
-    image: "srv-captain--gbd-proxy"
+    image: "caprover/nginx-reverse-proxy:1-ef5ffcb"
     restart: always
     volumes:
       - django_static:/var/www/django/static  # serving django's statics
