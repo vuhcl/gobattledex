@@ -20,7 +20,6 @@ services:
       # Image for production:
       image: "ghrc.io/vuhcl/gbd-django:latest"
       build:
-        target: production
         args:
           DJANGO_ENV: production
       restart: unless-stopped
