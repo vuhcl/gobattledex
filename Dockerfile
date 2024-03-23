@@ -20,11 +20,15 @@ RUN apt-get update && apt-get upgrade -y \
   build-essential \
   curl \
   libpq-dev \
-  && curl -sSL 'https://install.python-poetry.org' | POETRY_HOME=${PYSETUP_PATH} python3 - \
+  && curl -sSL 'https://install.python-poetry.org' | python3 - \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
+WORKDIR ${PYSETUP_PATH}
 
-FROM python-base as builder-base
+FROM python-base as development
+# 'development' stage installs all dev deps and can be used to develop code.
+# For example using docker compose to mount local volume
+ENV DJANGO_ENV='development'
 RUN groupadd -g "${GID}" -r django \
   && useradd -d "$PYSETUP_PATH" -g django -l -r -u "${UID}" django \
   && chown django:django -R "$PYSETUP_PATH" \
@@ -33,15 +37,6 @@ RUN groupadd -g "${GID}" -r django \
   && chown django:django '/var/www/django/static' '/var/www/django/media'
 # Copy only requirements, to cache them in docker layer
 COPY --chown=django:django poetry.lock pyproject.toml $PYSETUP_PATH/
-COPY manage.py $PYSETUP_PATH
-COPY gbd $PYSETUP_PATH/gbd/
-COPY config $PYSETUP_PATH/config/
-
-# 'development' stage installs all dev deps and can be used to develop code.
-# For example using docker compose to mount local volume under /app
-FROM builder-base as development
-ENV DJANGO_ENV='development'
-# Copying poetry and venv into image
 RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
   poetry run pip install -U pip \
   && poetry install --with dev

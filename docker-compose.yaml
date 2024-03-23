@@ -14,10 +14,10 @@ services:
         target: development
         args:
           DJANGO_ENV: development
-        cache_from:
-          - "gbd-django:dev"
-          - "gbd-django:latest"
-          - "*"
+        # cache_from:
+        #   - "gbd-django:dev"
+        #   - "gbd-django:latest"
+        #   - "*"
       
       volumes:
         - django_static:/var/www/django/static
