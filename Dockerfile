@@ -12,6 +12,7 @@ ENV PYTHONUNBUFFERED=1 \
   # poetry:
   POETRY_NO_INTERACTION=1 \
   POETRY_VIRTUALENVS_CREATE=0 \
+  POETRY_CACHE_DIR="/var/cache/pypoetry" \
   POETRY_HOME="/usr/local" \
   PYSETUP_PATH="/opt/app"
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -37,7 +38,8 @@ FROM python-base as development
 # For example using docker compose to mount local volume
 ENV DJANGO_ENV='development'
 # Copy only requirements, to cache them in docker layer
-RUN poetry run pip install -U pip \
+RUN --mount=type=cache,target="$POETRY_CACHE_DIR" \
+  poetry run pip install -U pip \
   && poetry install --with dev
 ENTRYPOINT [ "uvicorn", "config.asgi", "--reload"]
 

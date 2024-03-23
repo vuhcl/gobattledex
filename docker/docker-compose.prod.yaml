@@ -18,7 +18,7 @@ services:
   django:
     <<: &django
       # Image for production:
-      image: "ghrc.io/vuhcl/gbd-django:latest"
+      image: gbd-django:prod
       build:
         args:
           DJANGO_ENV: production
@@ -38,10 +38,7 @@ services:
 #       replicas: 2
 
 networks:
-  proxynet:
-    driver: overlay
-    attachable: true
-  outside:
+  captain-overlay-network:
     external: true
 volumes:
   django_media:
